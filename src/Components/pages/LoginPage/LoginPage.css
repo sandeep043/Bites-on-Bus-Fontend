@@ -1,0 +1,249 @@
+/* login.css */
+.min-h-screen {
+    min-height: 100vh;
+}
+
+.login-container {
+    min-height: calc(100vh - 4rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 28rem;
+    padding: 2rem;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.logo-icon-container {
+    padding: 0.75rem;
+    background-color: #6366f1;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+}
+
+.logo-icon {
+    height: 2rem;
+    width: 2rem;
+    color: white;
+}
+
+.login-title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+}
+
+.login-subtitle {
+    color: #6b7280;
+}
+
+.role-confirmation {
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 0.5rem;
+}
+
+.role-text {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #6366f1;
+    font-weight: 500;
+}
+
+.change-role-btn {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+.change-role-btn:hover {
+    color: #6366f1;
+}
+
+.form-space {
+    margin-top: 1rem;
+}
+
+.password-input-container {
+    position: relative;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-right: 0.75rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle-icon {
+    height: 1rem;
+    width: 1rem;
+    color: #6b7280;
+}
+
+.remember-forgot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.forgot-password {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #6366f1;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.signup-text {
+    text-align: center;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #6b7280;
+    margin-top: 1rem;
+}
+
+.signup-link {
+    color: #6366f1;
+    font-weight: 500;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
+
+/* Role Selection */
+.role-selection-title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.role-selection-subtitle {
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.roles-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.role-card {
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.role-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.role-card.selected {
+    box-shadow: 0 0 0 2px #6366f1;
+    background-color: rgba(99, 102, 241, 0.05);
+}
+
+.role-icon-container {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+}
+
+.role-icon {
+    height: 2rem;
+    width: 2rem;
+    color: white;
+}
+
+.role-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    text-align: center;
+}
+
+.role-description {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #6b7280;
+    text-align: center;
+    margin-top: 0.25rem;
+}
+
+.role-selected-indicator {
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: #6366f1;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.5rem auto 0 auto;
+}
+
+.role-selected-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    background-color: white;
+    border-radius: 9999px;
+}
+
+/* Colors */
+.bg-primary {
+    background-color: #6366f1;
+}
+
+.bg-secondary {
+    background-color: #a855f7;
+}
+
+.bg-accent {
+    background-color: #ec4899;
+}
+
+.bg-muted-foreground {
+    background-color: #6b7280;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .roles-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

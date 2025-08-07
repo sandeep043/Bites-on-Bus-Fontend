@@ -1,0 +1,84 @@
+/* index.css */
+:root {
+    /* Colors */
+    --primary: #3b82f6;
+    /* Blue-500 */
+    --primary-hover: #2563eb;
+    /* Blue-600 */
+    --primary-foreground: #fff;
+    /* White */
+    --card-bg: #ffffff;
+    /* White */
+    --foreground: #1f2937;
+    /* Gray-800 */
+    --muted-foreground: #6b7280;
+    /* Gray-500 */
+    --muted: #f3f4f6;
+    /* Gray-100 */
+    --border: #e5e7eb;
+    /* Gray-200 */
+    --foreground: #000;
+    /* Replace with your actual color */
+    --primary-foreground: #fff;
+    /* Replace with your actual color */
+    --primary: #3b82f6;
+    /* Replace with your actual primary color */
+    --primary-rgb: 59, 130, 246;
+    /* Replace with your primary color RGB values */
+
+    --background: #ffffff;
+    --foreground: #000000;
+    --primary: #3b82f6;
+    --primary-rgb: 59, 130, 246;
+    --primary-light: #93c5fd;
+    --primary-dark: #1d4ed8;
+    --primary-foreground: #ffffff;
+    --card: #f8fafc;
+    --card-rgb: 248, 250, 252;
+    --muted-foreground: #64748b;
+    --input: #f1f5f9;
+    --border: #e2e8f0;
+    --yellow: #f59e0b;
+    --gray-300: #d1d5db;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    /* 4px */
+    --spacing-sm: 0.5rem;
+    /* 8px */
+    --spacing-md: 1rem;
+    /* 16px */
+    --spacing-lg: 1.5rem;
+    /* 24px */
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Global Resets */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--foreground);
+    background-color: #f9fafb;
+    /* Light gray background */
+}
+
+/* Utility Classes (Optional) */
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
