@@ -1,0 +1,134 @@
+.role-selection-container {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+.role-selection-wrapper {
+    max-width: 1200px;
+}
+
+.role-selection-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0d6efd;
+    margin-bottom: 0.5rem;
+}
+
+.role-selection-subtitle {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.role-card {
+    height: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.role-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+}
+
+.role-icon-container {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.role-card:hover .role-icon-container {
+    transform: scale(1.1);
+}
+
+.role-icon {
+    width: 2rem;
+    height: 2rem;
+    color: white;
+}
+
+.role-title {
+    font-size: 1.25rem;
+    color: #0d6efd;
+    margin-bottom: 0;
+}
+
+.role-description {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.role-features {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+    color: #6c757d;
+    font-size: 0.75rem;
+}
+
+.role-features li {
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.role-features li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #0d6efd;
+}
+
+.role-button {
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    color: white;
+    font-weight: 500;
+}
+
+.role-button:hover {
+    color: white;
+    opacity: 0.9;
+}
+
+.role-login-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+.role-login-link {
+    color: #0d6efd;
+    text-decoration: none;
+    padding: 0;
+    font-weight: 500;
+}
+
+.role-login-link:hover {
+    text-decoration: underline;
+}
+
+/* Role-specific colors */
+.bus-gradient {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+}
+
+.bg-secondary {
+    background-color: #6c757d;
+}
+
+.success-gradient {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}

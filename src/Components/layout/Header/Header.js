@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bus, User, Menu } from "lucide-react";
+import { User, Menu } from "lucide-react";
+import { Button } from "react-bootstrap";
+import Logo from '../../../assessts/sandy.png'
 
 import "./Header.css";
 
@@ -14,13 +16,11 @@ const Header = () => {
                 <div className="header-content">
                     {/* Logo */}
                     <div className="logo-container" onClick={() => navigate('/')}>
-                        <div className="logo-icon">
-                            <Bus className="icon" />
-                        </div>
-                        <div>
-                            <h1 className="logo-title">BusEats</h1>
-                            <p className="logo-subtitle">Fresh food on the go</p>
-                        </div>
+                        <img
+                            src={Logo}
+                            alt="Logo"
+                            className="logo"
+                        />
                     </div>
 
                     {/* Desktop Navigation */}
@@ -47,20 +47,20 @@ const Header = () => {
 
                     {/* Auth Buttons */}
                     <div className="auth-buttons">
-                        <button
+                        <Button
                             onClick={() => navigate('/login')}
                             className="signup-button"
 
                         >
                             <User className="button-icon" />
                             Login
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             onClick={() => navigate('/signup')}
                             className="signup-button"
                         >
                             Sign Up
-                        </button>
+                        </Button>
                     </div>
 
                     {/* Mobile menu button */}
@@ -95,19 +95,19 @@ const Header = () => {
                                 Track Order
                             </button>
                             <div className="mobile-auth-buttons">
-                                <button
-                                    variant="outline"
+                                <Button
+
                                     onClick={() => { navigate('/login'); setIsMenuOpen(false); }}
-                                    className="mobile-login-button"
+                                    className="btn mobile-login-button"
                                 >
                                     Login
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     onClick={() => { navigate('/signup'); setIsMenuOpen(false); }}
-                                    className="mobile-signup-button"
+                                    className="btn mobile-signup-button"
                                 >
                                     Sign Up
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>

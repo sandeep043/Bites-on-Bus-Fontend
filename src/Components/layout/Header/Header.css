@@ -19,39 +19,32 @@
     align-items: center;
     justify-content: space-between;
     height: 4rem;
+    gap: 1rem;
+    /* Add gap between items */
 }
 
 /* Logo Styles */
 .logo-container {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    height: 100%;
     cursor: pointer;
+    padding: 0.5rem 0;
+    /* Add some vertical padding if needed */
 }
 
-.logo-icon {
-    padding: 0.5rem;
-    background-color: var(--primary);
-    border-radius: 0.5rem;
+.logo {
+    height: 40px;
+    /* Adjust this value as needed */
+    width: auto;
+    /* Maintain aspect ratio */
+    object-fit: contain;
+    /* Ensure the image isn't stretched */
 }
 
-.icon {
-    height: 1.5rem;
-    width: 1.5rem;
-    color: var(--primary-foreground);
-}
 
-.logo-title {
-    font-size: 1.25rem;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    color: var(--foreground);
-}
 
-.logo-subtitle {
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-}
+
 
 /* Desktop Navigation */
 .desktop-nav {
@@ -85,6 +78,13 @@
     margin-right: 0.5rem;
 }
 
+.logoStyle {
+    height: 50px;
+    justify-self: center;
+    align-self: center;
+
+}
+
 .login-button {
     border-color: var(--primary);
     color: var(--primary);
@@ -96,12 +96,15 @@
 }
 
 .signup-button {
-    background-color: var(--primary);
+    background-color: #EE6362;
+    border-color: #EE6362;
+
     color: var(--primary-foreground);
 }
 
 .signup-button:hover {
-    background-color: var(--primary-hover);
+    background-color: #e49b9b;
+    border-color: #e49b9b;
 }
 
 /* Mobile Menu Button */
@@ -109,6 +112,7 @@
     padding: 0.5rem;
     border-radius: 0.5rem;
     background: none;
+    color: black;
     border: none;
     cursor: pointer;
     display: block;
@@ -152,18 +156,21 @@
 
 .mobile-login-button {
     flex: 1;
-    border-color: var(--primary);
-    color: var(--primary);
+    background-color: #EE6362;
+    border-color: #EE6362;
+    color: var(--primary-foreground);
 }
 
 .mobile-login-button:hover {
-    background-color: var(--primary);
+    background-color: #EE6362;
+    border-color: #EE6362;
     color: var(--primary-foreground);
 }
 
 .mobile-signup-button {
     flex: 1;
-    background-color: var(--primary);
+    background-color: #EE6362;
+    border-color: #EE6362;
     color: var(--primary-foreground);
 }
 
@@ -173,12 +180,26 @@
 
 /* Responsive Styles */
 @media (min-width: 768px) {
+    .header-content {
+        justify-content: space-between;
+    }
+
     .desktop-nav {
         display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex: 1;
+        /* Take available space */
+        justify-content: center;
+        /* Center the nav items */
+        margin: 0 1rem;
+        /* Add some margin if needed */
     }
 
     .auth-buttons {
         display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
 
     .mobile-menu-button {
