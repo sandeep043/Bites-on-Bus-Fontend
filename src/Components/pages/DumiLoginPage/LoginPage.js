@@ -1,21 +1,128 @@
 import React, { useState } from 'react';
+import { ArrowLeft, Bus, Utensils, Truck } from 'lucide-react';
+import { Card, Button, Form, InputGroup, FormControl } from 'react-bootstrap';
+import axios from 'axios';
 import RoleSelection from '../../auth/DummyRoleSelection/RoleSelection';
-import AuthForm from '../../auth/DummyAuthForm/AuthForm';
-import Header from '../../layout/Header/Header'
+import Header from '../../layout/Header/Header';
 import Footer from '../../layout/Footer/Footer';
-import './LoginPage.css'
+import { useNavigate } from "react-router-dom";
+import './LoginPage.css';
 
-const LoginPage = ({ onAuth }) => {
+
+const SignupPage = () => {
     const [authState, setAuthState] = useState('role-selection');
     const [selectedRole, setSelectedRole] = useState(null);
+    const [authMode, setAuthMode] = useState('login');
+    const [formData, setFormData] = useState({});
+    const navigate = useNavigate();
+
+    const roleConfig = {
+        traveler: {
+            icon: Bus,
+            title: 'Traveler Account',
+            color: 'bus-gradient'
+        },
+        restaurant: {
+            icon: Utensils,
+            title: 'Restaurant Partner',
+            color: 'bg-secondary'
+        },
+        delivery: {
+            icon: Truck,
+            title: 'Delivery Agent',
+            color: 'success-gradient'
+        }
+    };
 
     const handleRoleSelect = (role) => {
         setSelectedRole(role);
         setAuthState('auth-form');
     };
 
-    const handleAuth = (userData) => {
-        onAuth(userData);
+    const postUser = async (formData, role) => {
+        try {
+            if (role === 'restaurant') {
+                const payload = {
+                    businessName: formData.businessName,
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    phone: formData.phone,
+                    gender: formData.gender,
+                }
+                console.log(payload)
+                const response = await axios.post(
+                    "https://localhost:44319/api/User/register",
+                    payload,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                return response.data;
+            }
+            else if (role === 'traveler') {
+                try {
+                    const payload = {
+
+                        email: formData.email,
+                        password: formData.password,
+
+                    }
+
+                    const response = await axios.post(
+                        "http://localhost:4000/api/login",
+                        payload,
+                        {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                    return response.data;
+                } catch (error) {
+                    console.log(error.response.data.message);
+                }
+            }
+            else if (role === 'delivery') {
+                const payload = {
+                    vehicleNumber: formData.vehicleNumber,
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    phone: formData.phone,
+                    gender: formData.gender,
+                }
+                console.log(payload)
+                const response = await axios.post(
+                    "https://localhost:44319/api/User/register",
+                    payload,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                return response.data;
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+    const onAuth = async (data, role) => {
+        console.log(data, role)
+        const response = await postUser(data, role);
+        console.log(response)
+
+
+
+    }
+
+    const handleAuth = (userData, role) => {
+        onAuth(userData, role);
     };
 
     const handleBack = () => {
@@ -23,13 +130,28 @@ const LoginPage = ({ onAuth }) => {
         setSelectedRole(null);
     };
 
+    const handleInputChange = (e) => {
+        setFormData(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleAuth(formData, selectedRole);
+    };
+
+    const config = roleConfig[selectedRole];
+    const IconComponent = config?.icon;
+
     return (
         <>
             <Header />
             <div className="auth-flow-container">
-                <div className=" intro-box text-center mb-5">
-                    <h1 className="role-selection-title">welcome back</h1>
-                    <p className="role-selection-subtitle">Choose your role LOGIN</p>
+                <div className="text-center mb-5">
+                    <h1 className="role-selection-title">Welcome Back</h1>
+                    <p className="role-selection-subtitle">Choose your role to login</p>
                 </div>
 
                 {authState === 'role-selection' && (
@@ -37,12 +159,83 @@ const LoginPage = ({ onAuth }) => {
                 )}
 
                 {authState === 'auth-form' && selectedRole && (
-                    <AuthForm
-                        authtype={"login"}
-                        role={selectedRole}
-                        onBack={handleBack}
-                        onAuth={handleAuth}
-                    />
+                    <div className="auth-form-container">
+                        <div className="auth-form-wrapper">
+                            <Button
+                                variant="link"
+                                onClick={handleBack}
+                                className="auth-back-button"
+                            >
+                                <ArrowLeft className="icon mr-2" />
+                                Back to role selection
+                            </Button>
+
+                            <Card className="auth-card">
+                                <Card.Header className="text-center pb-4">
+                                    <div className={`icon-container ${config.color}`}>
+                                        <IconComponent className="icon-lg text-white" />
+                                    </div>
+                                    <Card.Title className="auth-title">{config.title}</Card.Title>
+                                    <p className="auth-subtitle">
+                                        {'Create your account'}
+                                    </p>
+                                </Card.Header>
+
+                                <Card.Body>
+                                    <Form onSubmit={handleSubmit}>
+
+
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Email</Form.Label>
+                                            <Form.Control
+                                                id="email"
+                                                name="email"
+                                                type="email"
+                                                value={formData.email}
+                                                onChange={handleInputChange}
+                                                required
+                                                placeholder="Enter your email"
+                                            />
+                                        </Form.Group>
+
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Password</Form.Label>
+                                            <Form.Control
+                                                id="password"
+                                                name="password"
+                                                type="password"
+                                                value={formData.password}
+                                                onChange={handleInputChange}
+                                                required
+                                                placeholder="Enter your password"
+                                            />
+                                        </Form.Group>
+
+
+
+                                        <Button
+                                            type="submit"
+                                            className={`w-100 auth-submit-button ${config.color}`}
+                                        >
+                                            {authMode === 'login' ? 'Sign In' : 'Create Account'}
+                                        </Button>
+
+                                        <div className="text-center mt-3">
+                                            <Button
+                                                variant="link"
+                                                onClick={() => navigate('/signup')}
+                                                className="auth-toggle-mode"
+                                            >
+                                                {authMode === 'login'
+                                                    ? "Don't have an account? Sign up"
+                                                    : 'Already have an account? Sign in'}
+                                            </Button>
+                                        </div>
+                                    </Form>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    </div>
                 )}
             </div>
             <Footer />
@@ -50,4 +243,4 @@ const LoginPage = ({ onAuth }) => {
     );
 };
 
-export default LoginPage;
+export default SignupPage;
