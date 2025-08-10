@@ -1,152 +1,286 @@
-import React, { useState } from "react";
-import { Bus, Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Card, Button, Form } from "react-bootstrap";
-import Header from '../../layout/Header/Header'
+import React, { useState } from 'react';
+import { ArrowLeft, Bus, Utensils, Truck, Settings } from 'lucide-react';
+import { Card, Button, Form, InputGroup, FormControl } from 'react-bootstrap';
+import axios from 'axios';
+import RoleSelection from '../../auth/RoleSelection/RoleSelection';
+import Header from '../../layout/Header/Header';
 import Footer from '../../layout/Footer/Footer';
-import RoleSelection from "../../auth/RoleSelection";
-import "./LoginPage.css";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import './LoginPage.css';
 
-const LoginPage = () => {
+
+const SignupPage = () => {
+    const [authState, setAuthState] = useState('role-selection');
     const [selectedRole, setSelectedRole] = useState(null);
-    const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [authMode, setAuthMode] = useState('login');
+    const [formData, setFormData] = useState({});
     const navigate = useNavigate();
 
-    const handleLogin = () => {
-        if (email && password && selectedRole) {
-            switch (selectedRole) {
-                case 'traveler':
-                    navigate('/');
-                    break;
-                case 'restaurant':
-                    navigate('/restaurant-dashboard');
-                    break;
-                case 'delivery':
-                    navigate('/delivery-dashboard');
-                    break;
-                case 'admin':
-                    navigate('/admin-dashboard');
-                    break;
-                default:
-                    navigate('/');
-            }
+    const roleConfig = {
+        traveler: {
+            icon: Bus,
+            title: 'Traveler Account',
+            color: 'bus-gradient'
+        },
+        restaurant: {
+            icon: Utensils,
+            title: 'Restaurant Partner',
+            color: 'bg-secondary'
+        },
+        delivery: {
+            icon: Truck,
+            title: 'Delivery Agent',
+            color: 'success-gradient'
+        },
+        admin: {
+            icon: Settings,
+            title: 'Admin ',
+            color: 'success-gradient'
         }
     };
 
+    const handleRoleSelect = (role) => {
+        setSelectedRole(role);
+        setAuthState('auth-form');
+    };
+
+    const postUser = async (formData, role) => {
+        try {
+            if (role === 'restaurant') {
+                const payload = {
+                    email: formData.email,
+                    password: formData.password,
+                }
+                console.log(payload)
+                const response = await axios.post(
+                    "http://localhost:4000/api/owner/login",
+                    payload,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                return response.data;
+            }
+            else if (role === 'traveler') {
+                try {
+                    const payload = {
+
+                        email: formData.email,
+                        password: formData.password,
+
+                    }
+
+                    const response = await axios.post(
+                        "http://localhost:4000/api/user/login",
+                        payload,
+                        {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                    return response.data;
+                } catch (error) {
+                    console.log(error.response.data.message);
+                }
+            } else if (role === 'admin') {
+                try {
+                    const payload = {
+
+                        email: formData.email,
+                        password: formData.password,
+
+                    }
+
+                    const response = await axios.post(
+                        "http://localhost:4000/api/admin/login",
+                        payload,
+                        {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                    return response;
+                } catch (error) {
+                    console.log(error.response.data.message);
+                    toast.error(`Error: ${error.response.data.message}`);
+                }
+            }
+            else if (role === 'delivery') {
+                const payload = {
+                    email: formData.email,
+                    password: formData.password,
+                }
+                console.log(payload)
+                const response = await axios.post(
+                    "http://localhost:4000/api/agent/login",
+                    payload,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                return response.data;
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+    const onAuth = async (data, role) => {
+        console.log(data, role)
+        const response = await postUser(data, role);
+        if (response) {
+            localStorage.setItem(`${role}Data`, JSON.stringify(response.data));
+
+            console.log(`${role}Data`);
+            toast.success(`Login successful! as ${role}`);
+            if (role === 'traveler') {
+                navigate('/');
+            }
+            else if (role === 'restaurant') {
+                navigate('/restaurant-dashboard');
+            }
+            else if (role === 'admin') {
+                navigate('/admin-dashboard');
+            }
+            else if (role === 'delivery') {
+                navigate('/delivery-dashboard');
+            }
+        }
+
+
+
+
+    }
+
+    const handleAuth = (userData, role) => {
+        onAuth(userData, role);
+    };
+
+    const handleBack = () => {
+        setAuthState('role-selection');
+        setSelectedRole(null);
+    };
+
+    const handleInputChange = (e) => {
+        setFormData(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleAuth(formData, selectedRole);
+    };
+
+    const config = roleConfig[selectedRole];
+    const IconComponent = config?.icon;
+
     return (
-        <div className="min-h-screen">
+        <>
             <Header />
+            <ToastContainer />
+            <div className="auth-flow-container">
+                <div className="text-center mb-5">
+                    <h1 className="role-selection-title">Welcome Back</h1>
+                    <p className="role-selection-subtitle">Choose your role to login</p>
+                </div>
 
-            <div className="login-container">
-                <Card className="login-card">
-                    {/* Logo */}
-                    <div className="logo-container">
-                        <div className="flex items-center justify-center">
-                            <div className="logo-icon-container">
-                                <Bus className="logo-icon" />
-                            </div>
-                        </div>
-                        <h1 className="login-title">Welcome Back</h1>
-                        <p className="login-subtitle">Sign in to your account</p>
-                    </div>
+                {authState === 'role-selection' && (
+                    <RoleSelection onRoleSelect={handleRoleSelect} />
+                )}
 
-                    {/* Role Selection */}
-                    {!selectedRole ? (
-                        <RoleSelection
-                            onRoleSelect={setSelectedRole}
-                            selectedRole={selectedRole}
-                        />
-                    ) : (
-                        <div className="form-space">
-                            {/* Role Confirmation */}
-                            <div className="role-confirmation">
-                                <p className="role-text">
-                                    Logging in as: <span className="font-semibold capitalize">{selectedRole}</span>
-                                </p>
-                                <Button
-                                    variant="link"
-                                    onClick={() => setSelectedRole(null)}
-                                    className="change-role-btn"
-                                >
-                                    Change role
-                                </Button>
-                            </div>
+                {authState === 'auth-form' && selectedRole && (
+                    <div className="auth-form-container">
+                        <div className="auth-form-wrapper">
+                            <Button
+                                variant="link"
+                                onClick={handleBack}
+                                className="auth-back-button"
+                            >
+                                <ArrowLeft className="icon mr-2" />
+                                Back to role selection
+                            </Button>
 
-                            {/* Login Form */}
-                            <div className="mt-4">
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Email</Form.Label>
-                                    <Form.Control
-                                        type="email"
-                                        placeholder="Enter your email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    />
-                                </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Password</Form.Label>
-                                    <div className="password-input-container">
-                                        <Form.Control
-                                            type={showPassword ? "text" : "password"}
-                                            placeholder="Enter your password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                        />
-                                        <Button
-                                            variant="link"
-                                            className="password-toggle-btn"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                        >
-                                            {showPassword ? (
-                                                <EyeOff className="password-toggle-icon" />
-                                            ) : (
-                                                <Eye className="password-toggle-icon" />
-                                            )}
-                                        </Button>
+                            <Card className="auth-card">
+                                <Card.Header className="text-center pb-4">
+                                    <div className={`icon-container ${config.color}`}>
+                                        <IconComponent className="icon-lg text-white" />
                                     </div>
-                                </Form.Group>
+                                    <Card.Title className="auth-title">{config.title}</Card.Title>
+                                    <p className="auth-subtitle">
+                                        {'login to your '}
+                                    </p>
+                                </Card.Header>
 
-                                <div className="remember-forgot">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Remember me"
-                                        className="remember-me"
-                                    />
-                                    <Button variant="link" className="forgot-password">
-                                        Forgot password?
-                                    </Button>
-                                </div>
+                                <Card.Body>
+                                    <Form onSubmit={handleSubmit}>
 
-                                <Button
-                                    onClick={handleLogin}
-                                    disabled={!email || !password}
-                                    className="w-100 bg-primary mt-3"
-                                >
-                                    Sign In
-                                </Button>
 
-                                <div className="signup-text">
-                                    Don't have an account?{" "}
-                                    <Button
-                                        variant="link"
-                                        onClick={() => navigate('/signup')}
-                                        className="signup-link p-0"
-                                    >
-                                        Sign up
-                                    </Button>
-                                </div>
-                            </div>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Email</Form.Label>
+                                            <Form.Control
+                                                id="email"
+                                                name="email"
+                                                type="email"
+                                                value={formData.email}
+                                                onChange={handleInputChange}
+                                                required
+                                                placeholder="Enter your email"
+                                            />
+                                        </Form.Group>
+
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Password</Form.Label>
+                                            <Form.Control
+                                                id="password"
+                                                name="password"
+                                                type="password"
+                                                value={formData.password}
+                                                onChange={handleInputChange}
+                                                required
+                                                placeholder="Enter your password"
+                                            />
+                                        </Form.Group>
+
+
+
+                                        <Button
+                                            type="submit"
+                                            className={`w-100 auth-submit-button ${config.color}`}
+                                        >
+                                            {authMode === 'login' ? 'Sign In' : 'Create Account'}
+                                        </Button>
+
+                                        <div className="text-center mt-3">
+                                            <Button
+                                                variant="link"
+                                                onClick={() => navigate('/signup')}
+                                                className="auth-toggle-mode"
+                                            >
+                                                {authMode === 'login'
+                                                    ? "Don't have an account? Sign up"
+                                                    : 'Already have an account? Sign in'}
+                                            </Button>
+                                        </div>
+                                    </Form>
+                                </Card.Body>
+                            </Card>
                         </div>
-                    )}
-                </Card>
+                    </div>
+                )}
             </div>
-
             <Footer />
-        </div>
+        </>
     );
 };
 
-export default LoginPage;
+export default SignupPage;

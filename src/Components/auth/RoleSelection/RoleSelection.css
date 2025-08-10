@@ -10,6 +10,15 @@
     max-width: 1200px;
 }
 
+.admin-card {
+    background: #fef3c7;
+    color: #d97706;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.3s ease;
+}
+
 .role-selection-title {
     font-size: 2rem;
     font-weight: 700;

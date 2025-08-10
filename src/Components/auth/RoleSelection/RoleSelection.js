@@ -1,13 +1,15 @@
 import React from 'react';
-import { Bus, Utensils, Truck } from 'lucide-react';
+import { Bus, Utensils, Truck, Settings } from 'lucide-react';
 import { Card, Button, Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import './RoleSelection.css'
 
 const RoleSelection = ({ onRoleSelect }) => {
+    const navigate = useNavigate();
     return (
         <div className="role-selection-container">
             <Container className="role-selection-wrapper">
-               
+
                 <Row className="g-4">
                     {/* Traveler Card */}
                     <Col md={4}>
@@ -22,12 +24,7 @@ const RoleSelection = ({ onRoleSelect }) => {
                                 <p className="role-description">
                                     Order delicious food during your bus journey using your PNR
                                 </p>
-                                <ul className="role-features">
-                                    <li>Easy PNR-based ordering</li>
-                                    <li>Food delivered to bus stops</li>
-                                    <li>Real-time order tracking</li>
-                                    <li>Multiple payment options</li>
-                                </ul>
+
                                 <Button
                                     onClick={() => onRoleSelect('traveler')}
                                     className="role-button bus-gradient"
@@ -37,6 +34,32 @@ const RoleSelection = ({ onRoleSelect }) => {
                             </Card.Body>
                         </Card>
                     </Col>
+
+                    {/* Admin Card */}
+                    <Col md={4}>
+                        <Card className="role-card admin-card">
+                            <Card.Header className="text-center pb-3">
+                                <div className="role-icon-container bg-primary">
+                                    <Settings className="role-icon" />
+                                </div>
+                                <Card.Title className="role-title">Admin</Card.Title>
+                            </Card.Header>
+                            <Card.Body className="text-center">
+                                <p className="role-description">
+                                    Manage the entire food delivery platform efficiently
+                                </p>
+
+                                <Button
+                                    onClick={() => onRoleSelect('admin')}
+                                    className="role-button bg-primary"
+                                >
+                                    Continue as Admin
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+
 
                     {/* Restaurant Owner Card */}
                     <Col md={4}>
@@ -51,12 +74,7 @@ const RoleSelection = ({ onRoleSelect }) => {
                                 <p className="role-description">
                                     Partner with us to serve thousands of hungry travelers
                                 </p>
-                                <ul className="role-features">
-                                    <li>Manage your menu online</li>
-                                    <li>Track orders & analytics</li>
-                                    <li>Expand customer reach</li>
-                                    <li>Flexible partnerships</li>
-                                </ul>
+
                                 <Button
                                     onClick={() => onRoleSelect('restaurant')}
                                     className="role-button bg-secondary"
@@ -80,12 +98,7 @@ const RoleSelection = ({ onRoleSelect }) => {
                                 <p className="role-description">
                                     Earn money by delivering food to bus stops in your area
                                 </p>
-                                <ul className="role-features">
-                                    <li>Flexible working hours</li>
-                                    <li>Fair compensation</li>
-                                    <li>GPS-guided delivery</li>
-                                    <li>Performance bonuses</li>
-                                </ul>
+
                                 <Button
                                     onClick={() => onRoleSelect('delivery')}
                                     className="role-button success-gradient"
@@ -99,9 +112,9 @@ const RoleSelection = ({ onRoleSelect }) => {
 
                 <div className="text-center mt-5">
                     <p className="role-login-text">
-                        Already have an account?{' '}
-                        <Button variant="link" className="role-login-link">
-                            Sign in instead
+                        dont have account  {' '}
+                        <Button variant="link" onClick={() => navigate('/signup')} className="role-login-link">
+                            Sign up instead
                         </Button>
                     </p>
                 </div>
