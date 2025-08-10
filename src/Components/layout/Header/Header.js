@@ -38,10 +38,10 @@ const Header = () => {
                             About
                         </button>
                         <button
-                            onClick={() => navigate('/track-order')}
+                            onClick={() => navigate('/order')}
                             className="nav-button"
                         >
-                            Track Order
+                            Food Order
                         </button>
                     </nav>
 

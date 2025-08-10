@@ -1,0 +1,145 @@
+.delivery-dashboard {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-subtitle {
+    color: #6c757d;
+}
+
+.stats-card {
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.stats-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.stats-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.order-details {
+    margin-bottom: 1.5rem;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}
+
+.customer-details {
+    margin-bottom: 1.5rem;
+}
+
+.delivery-location {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.no-deliveries {
+    padding: 3rem;
+    text-align: center;
+}
+
+.no-deliveries-icon {
+    width: 4rem;
+    height: 4rem;
+    color: #6c757d;
+    margin: 0 auto 1rem;
+}
+
+.waiting-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.waiting-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #28a745;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.delivery-history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: rgba(108, 117, 125, 0.1);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.delivery-history-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(40, 167, 69, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.star-rating {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.star-filled {
+    color: #ffc107;
+    fill: currentColor;
+}
+
+.star-empty {
+    color: #dee2e6;
+}

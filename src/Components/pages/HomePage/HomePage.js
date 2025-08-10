@@ -19,7 +19,7 @@ const HomePage = () => {
 
     const handlePnrSubmit = () => {
         if (pnr.length >= 8) {
-            navigate(`/order/${pnr}`);
+            navigate(`/order`);
         }
     };
 
@@ -116,9 +116,7 @@ const HomePage = () => {
                                         </Button>
                                     </div>
 
-                                    <p className="pnr-help-text">
-                                        Don't have a PNR? <Button variant="link" className="pnr-link">Book a bus ticket</Button>
-                                    </p>
+
                                 </div>
                             </Card.Body>
                         </Card>

@@ -1,0 +1,486 @@
+import React, { useState, useEffect } from "react";
+import {
+    Card,
+    Button,
+    Badge,
+    Tabs,
+    Tab,
+    Form,
+    InputGroup,
+    FormControl,
+    ListGroup,
+    Container,
+    Row,
+    Col
+} from "react-bootstrap";
+import {
+    Bell,
+    TrendingUp,
+    DollarSign,
+    Clock,
+    Star,
+    Plus,
+    Edit,
+    Trash2,
+    CheckCircle,
+    XCircle,
+    AlertCircle,
+    User,
+    Phone,
+    Truck
+} from "lucide-react";
+import Header from "../../layout/Header/Header";
+
+import { updateOrderStatus, getRestaurantOrders, subscribeToOrderUpdates } from "../../lib/orderManger";
+
+const RestaurantDashBoard = () => {
+    const [activeOrders, setActiveOrders] = useState([]);
+    const [completedOrders, setCompletedOrders] = useState([]);
+    const restaurantId = "rest_001"; // This would come from auth context
+
+    const [menuItems, setMenuItems] = useState([
+        { id: '1', name: 'Butter Chicken', price: 280, category: 'Main Course', available: true },
+        { id: '2', name: 'Dal Makhani', price: 180, category: 'Main Course', available: true },
+        { id: '3', name: 'Garlic Naan', price: 60, category: 'Bread', available: true },
+        { id: '4', name: 'Biryani', price: 320, category: 'Rice', available: false }
+    ]);
+
+    const [newItem, setNewItem] = useState({
+        name: '',
+        price: '',
+        category: '',
+        description: ''
+    });
+
+    useEffect(() => {
+        fetchOrders();
+
+        const subscription = subscribeToOrderUpdates((payload) => {
+            console.log('Order update received:', payload);
+            fetchOrders();
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
+
+    const fetchOrders = async () => {
+        try {
+            const orders = await getRestaurantOrders(restaurantId);
+            const active = orders.filter(order =>
+                ['preparing', 'ready', 'assigned', 'picked-up', 'in-transit'].includes(order.status)
+            );
+            const completed = orders.filter(order =>
+                order.status === 'completed' || order.status === 'delivered'
+            );
+            setActiveOrders(active);
+            setCompletedOrders(completed);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        }
+    };
+
+    const handleUpdateOrderStatus = async (orderId, newStatus) => {
+        try {
+            await updateOrderStatus(orderId, newStatus);
+            fetchOrders();
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
+    };
+
+    const toggleItemAvailability = (itemId) => {
+        setMenuItems(items =>
+            items.map(item =>
+                item.id === itemId ? { ...item, available: !item.available } : item
+            )
+        );
+    };
+
+    const getStatusBadgeVariant = (status) => {
+        switch (status) {
+            case 'preparing': return 'warning';
+            case 'ready': return 'success';
+            case 'picked-up': return 'primary';
+            default: return 'secondary';
+        }
+    };
+
+    const getStatusIcon = (status) => {
+        switch (status) {
+            case 'preparing': return <Clock size={16} />;
+            case 'ready': return <CheckCircle size={16} />;
+            case 'picked-up': return <AlertCircle size={16} />;
+            default: return <XCircle size={16} />;
+        }
+    };
+
+    const stats = [
+        { label: 'Today\'s Orders', value: '23', icon: Bell, color: 'text-primary' },
+        { label: 'Revenue', value: '₹12,450', icon: DollarSign, color: 'text-success' },
+        { label: 'Avg Rating', value: '4.5', icon: Star, color: 'text-warning' },
+        { label: 'Prep Time', value: '15 min', icon: Clock, color: 'text-info' }
+    ];
+
+    return (
+        <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
+            <Header />
+
+            <Container className="py-4 px-4">
+                {/* Header */}
+                <Row className="mb-4 align-items-center">
+                    <Col>
+                        <h1 style={{ fontSize: '1.75rem', fontWeight: '700', fontFamily: 'Poppins, sans-serif' }}>
+                            Restaurant Dashboard
+                        </h1>
+                        <p style={{ color: '#6c757d' }}>Punjabi Dhaba - Highway Rest Point</p>
+                    </Col>
+                    <Col xs="auto">
+                        <div className="d-flex align-items-center gap-2">
+                            <Button variant="outline-primary" className="d-flex align-items-center">
+                                <Bell size={16} className="me-2" />
+                                Notifications
+                            </Button>
+                            <Badge bg="success" className="bg-opacity-10 text-success">
+                                Online
+                            </Badge>
+                        </div>
+                    </Col>
+                </Row>
+
+                {/* Stats Cards */}
+                <Row className="mb-4 g-3">
+                    {stats.map((stat, index) => {
+                        const Icon = stat.icon;
+                        return (
+                            <Col key={index} md={3}>
+                                <Card className="p-3 h-100">
+                                    <Card.Body className="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>{stat.label}</p>
+                                            <h3 className={stat.color} style={{ fontWeight: '700' }}>{stat.value}</h3>
+                                        </div>
+                                        <Icon size={32} className={stat.color} />
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        );
+                    })}
+                </Row>
+
+                {/* Main Content */}
+                <Tabs defaultActiveKey="orders" id="dashboard-tabs" className="mb-3">
+                    <Tab eventKey="orders" title="Order Management">
+                        <div className="mt-4">
+                            <div className="d-flex justify-content-between align-items-center mb-4">
+                                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', fontFamily: 'Poppins, sans-serif' }}>
+                                    Active Orders
+                                </h2>
+                                <div className="d-flex gap-2">
+                                    <Badge bg="warning" className="bg-opacity-10 text-warning">
+                                        {activeOrders.filter(o => o.status === 'preparing').length} Preparing
+                                    </Badge>
+                                    <Badge bg="success" className="bg-opacity-10 text-success">
+                                        {activeOrders.filter(o => o.status === 'ready').length} Ready
+                                    </Badge>
+                                </div>
+                            </div>
+
+                            <div className="d-grid gap-3">
+                                {activeOrders.map((order) => (
+                                    <Card key={order.id} className="p-3">
+                                        <Card.Body>
+                                            <div className="d-flex justify-content-between mb-3">
+                                                <div>
+                                                    <div className="d-flex align-items-center gap-2 mb-2">
+                                                        <h5 className="mb-0" style={{ fontWeight: '600' }}>Order #{order.id}</h5>
+                                                        <Badge bg={getStatusBadgeVariant(order.status)} className="d-flex align-items-center gap-1">
+                                                            {getStatusIcon(order.status)}
+                                                            <span style={{ textTransform: 'capitalize' }}>
+                                                                {order.status.replace('-', ' ')}
+                                                            </span>
+                                                        </Badge>
+                                                    </div>
+                                                    <p className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>
+                                                        PNR: {order.pnr} | {order.customer} | Seat {order.seat}
+                                                    </p>
+                                                    <p className="text-muted" style={{ fontSize: '0.875rem' }}>
+                                                        Phone: {order.phone} | Stop: {order.stop_name}
+                                                    </p>
+
+                                                    {order.delivery_agent_id && order.agent_name && (
+                                                        <div className="mt-2 p-2 bg-info bg-opacity-10 rounded">
+                                                            <div className="d-flex align-items-center gap-2">
+                                                                <User size={16} className="text-info" />
+                                                                <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
+                                                                    Agent: {order.agent_name}
+                                                                </span>
+                                                            </div>
+                                                            <div className="d-flex align-items-center gap-2 mt-1">
+                                                                <Phone size={16} className="text-info" />
+                                                                <span style={{ fontSize: '0.875rem' }}>{order.agent_phone}</span>
+                                                                <Truck size={16} className="text-info ms-2" />
+                                                                <span style={{ fontSize: '0.875rem' }}>{order.agent_vehicle}</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="text-end">
+                                                    <h5 className="mb-0">₹{order.total}</h5>
+                                                    <p className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>
+                                                        Order: {order.order_time} | Delivery: {order.delivery_time}
+                                                    </p>
+                                                    {order.otp && (
+                                                        <div className="mt-1">
+                                                            <span className="text-muted me-1" style={{ fontSize: '0.75rem' }}>OTP:</span>
+                                                            <span className="font-monospace fw-bold text-primary">{order.otp}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <ListGroup variant="flush" className="mb-3">
+                                                {order.items.map((item, index) => (
+                                                    <ListGroup.Item key={index} className="d-flex justify-content-between px-0">
+                                                        <span style={{ fontSize: '0.875rem' }}>
+                                                            {item.name} × {item.quantity}
+                                                        </span>
+                                                        <span style={{ fontSize: '0.875rem' }}>
+                                                            ₹{item.price * item.quantity}
+                                                        </span>
+                                                    </ListGroup.Item>
+                                                ))}
+                                            </ListGroup>
+
+                                            <div className="d-flex gap-2">
+                                                {order.status === 'preparing' && (
+                                                    <Button
+                                                        variant="success"
+                                                        onClick={() => handleUpdateOrderStatus(order.id, 'ready')}
+                                                        className="d-flex align-items-center"
+                                                    >
+                                                        <CheckCircle size={16} className="me-2" />
+                                                        Mark Ready
+                                                    </Button>
+                                                )}
+                                                {order.status === 'assigned' && order.delivery_agent_id && (
+                                                    <Button
+                                                        variant="primary"
+                                                        onClick={() => handleUpdateOrderStatus(order.id, 'picked-up')}
+                                                        className="d-flex align-items-center"
+                                                    >
+                                                        <AlertCircle size={16} className="me-2" />
+                                                        Mark Picked Up
+                                                    </Button>
+                                                )}
+                                                {order.status === 'in-transit' && (
+                                                    <Button
+                                                        variant="info"
+                                                        onClick={() => handleUpdateOrderStatus(order.id, 'completed')}
+                                                        className="d-flex align-items-center"
+                                                    >
+                                                        <CheckCircle size={16} className="me-2" />
+                                                        Complete Order
+                                                    </Button>
+                                                )}
+                                                <Button variant="outline-primary">
+                                                    Contact Customer
+                                                </Button>
+                                            </div>
+                                        </Card.Body>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    </Tab>
+
+                    <Tab eventKey="menu" title="Menu Editor">
+                        <div className="mt-4">
+                            <div className="d-flex justify-content-between align-items-center mb-4">
+                                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', fontFamily: 'Poppins, sans-serif' }}>
+                                    Menu Items
+                                </h2>
+                                <Button variant="primary" className="d-flex align-items-center">
+                                    <Plus size={16} className="me-2" />
+                                    Add New Item
+                                </Button>
+                            </div>
+
+                            <Row>
+                                <Col md={6} className="mb-3 mb-md-0">
+                                    <div className="d-grid gap-3">
+                                        {menuItems.map((item) => (
+                                            <Card key={item.id} className="p-2">
+                                                <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                                                    <div className="flex-grow-1">
+                                                        <div className="d-flex align-items-center gap-2 mb-1">
+                                                            <h6 className="mb-0" style={{ fontWeight: '500' }}>{item.name}</h6>
+                                                            <Badge bg="light" text="dark" className="fs-6">
+                                                                {item.category}
+                                                            </Badge>
+                                                            <Badge bg={item.available ? 'success' : 'danger'} className="bg-opacity-10">
+                                                                {item.available ? 'Available' : 'Out of Stock'}
+                                                            </Badge>
+                                                        </div>
+                                                        <p className="text-primary fw-bold mb-0">₹{item.price}</p>
+                                                    </div>
+                                                    <div className="d-flex gap-1">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline-secondary"
+                                                            onClick={() => toggleItemAvailability(item.id)}
+                                                        >
+                                                            {item.available ? 'Disable' : 'Enable'}
+                                                        </Button>
+                                                        <Button size="sm" variant="outline-secondary">
+                                                            <Edit size={16} />
+                                                        </Button>
+                                                        <Button size="sm" variant="outline-danger">
+                                                            <Trash2 size={16} />
+                                                        </Button>
+                                                    </div>
+                                                </Card.Body>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                </Col>
+
+                                <Col md={6}>
+                                    <Card className="p-3">
+                                        <Card.Body>
+                                            <h5 className="mb-3" style={{ fontWeight: '600', fontFamily: 'Poppins, sans-serif' }}>
+                                                Add New Menu Item
+                                            </h5>
+                                            <Form>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Item Name</Form.Label>
+                                                    <FormControl
+                                                        placeholder="Enter item name"
+                                                        value={newItem.name}
+                                                        onChange={(e) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
+                                                    />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Price (₹)</Form.Label>
+                                                    <FormControl
+                                                        type="number"
+                                                        placeholder="Enter price"
+                                                        value={newItem.price}
+                                                        onChange={(e) => setNewItem(prev => ({ ...prev, price: e.target.value }))}
+                                                    />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Category</Form.Label>
+                                                    <FormControl
+                                                        placeholder="Enter category"
+                                                        value={newItem.category}
+                                                        onChange={(e) => setNewItem(prev => ({ ...prev, category: e.target.value }))}
+                                                    />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Description</Form.Label>
+                                                    <FormControl
+                                                        as="textarea"
+                                                        placeholder="Enter item description"
+                                                        value={newItem.description}
+                                                        onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
+                                                        rows={3}
+                                                    />
+                                                </Form.Group>
+                                                <Button
+                                                    variant="primary"
+                                                    disabled={!newItem.name || !newItem.price}
+                                                    className="w-100"
+                                                >
+                                                    Add Item
+                                                </Button>
+                                            </Form>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Tab>
+
+                    <Tab eventKey="analytics" title="Performance Analytics">
+                        <div className="mt-4">
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', fontFamily: 'Poppins, sans-serif' }}>
+                                Performance Analytics
+                            </h2>
+
+                            <Row className="mt-3 g-3">
+                                <Col md={6}>
+                                    <Card className="p-3">
+                                        <Card.Body>
+                                            <h5 className="mb-3" style={{ fontWeight: '600', fontFamily: 'Poppins, sans-serif' }}>
+                                                Today's Performance
+                                            </h5>
+                                            <ListGroup variant="flush">
+                                                <ListGroup.Item className="d-flex justify-content-between px-0 py-2">
+                                                    <span>Total Orders:</span>
+                                                    <span className="fw-bold">{activeOrders.length + completedOrders.length}</span>
+                                                </ListGroup.Item>
+                                                <ListGroup.Item className="d-flex justify-content-between px-0 py-2">
+                                                    <span>Active Orders:</span>
+                                                    <span className="fw-bold">{activeOrders.length}</span>
+                                                </ListGroup.Item>
+                                                <ListGroup.Item className="d-flex justify-content-between px-0 py-2">
+                                                    <span>Completed Orders:</span>
+                                                    <span className="fw-bold">{completedOrders.length}</span>
+                                                </ListGroup.Item>
+                                                <ListGroup.Item className="d-flex justify-content-between px-0 py-2">
+                                                    <span>Total Revenue:</span>
+                                                    <span className="fw-bold">
+                                                        ₹{completedOrders.reduce((sum, order) => sum + order.total, 0)}
+                                                    </span>
+                                                </ListGroup.Item>
+                                            </ListGroup>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+
+                                <Col md={6}>
+                                    <Card className="p-3">
+                                        <Card.Body>
+                                            <h5 className="mb-3" style={{ fontWeight: '600', fontFamily: 'Poppins, sans-serif' }}>
+                                                Completed Orders
+                                            </h5>
+                                            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                                {completedOrders.length > 0 ? (
+                                                    <ListGroup variant="flush">
+                                                        {completedOrders.map((order) => (
+                                                            <ListGroup.Item
+                                                                key={order.id}
+                                                                className="d-flex justify-content-between align-items-center px-0 py-2 bg-success bg-opacity-10 rounded mb-1"
+                                                            >
+                                                                <div>
+                                                                    <span className="fw-bold">#{order.id}</span>
+                                                                    <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{order.customer}</p>
+                                                                </div>
+                                                                <div className="text-end">
+                                                                    <span className="fw-bold">₹{order.total}</span>
+                                                                    <p className="text-muted mb-0" style={{ fontSize: '0.75rem' }}>
+                                                                        {new Date(order.updated_at).toLocaleTimeString()}
+                                                                    </p>
+                                                                </div>
+                                                            </ListGroup.Item>
+                                                        ))}
+                                                    </ListGroup>
+                                                ) : (
+                                                    <p className="text-muted text-center py-4">No completed orders today</p>
+                                                )}
+                                            </div>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Tab>
+                </Tabs>
+            </Container>
+        </div>
+    );
+};
+
+export default RestaurantDashBoard;
