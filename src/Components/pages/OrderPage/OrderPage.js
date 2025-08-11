@@ -3,19 +3,55 @@ import { Bus, Search, MapPin } from 'lucide-react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../layout/Header/Header';
+import Footer from '../../layout/Footer/Footer';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 import './OrderPage.css';
 
-const OrderPage = ({ onPNRSubmit }) => {
+const OrderPage = () => {
+    const navigate = useNavigate();
     const [pnr, setPnr] = useState('');
+    const [pnrDetails, setPnrDetails] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    //    navigate('/paymentPage', { state: { adults, flightDetails, airLineDetails } });
+    //const { adults, flightDetails, airLineDetails } = location.state || {};
+
+    const onPNRSubmit = async (pnr) => {
+        try {
+            const response = await axios.get(`http://localhost:4000/api/pnr/${pnr}`);
+
+            return response.data;
+
+
+        } catch (error) {
+            console.error("Error fetching PNR data:", error);
+            alert("Failed to fetch PNR data. Please try again later.");
+            setIsLoading(false);
+
+        }
+
+
+
+
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (pnr.length === 10) {
+        if (pnr.length > 5) {
             setIsLoading(true);
-            setTimeout(() => {
+            setTimeout(async () => {
+
+                const response = await onPNRSubmit(pnr);
                 setIsLoading(false);
-                onPNRSubmit(pnr);
+                if (response) {
+                    setPnrDetails(response);
+                    console.log("PNR Details:", pnrDetails);
+                    toast.success("PNR details fetched successfully!");
+                    // navigate('/paymentPage', { state: { adults, flightDetails, airLineDetails
+                    navigate('/orderflow', { state: { pnr, response } });
+
+                }
+
             }, 1500);
         }
     };
@@ -49,7 +85,7 @@ const OrderPage = ({ onPNRSubmit }) => {
                                     type="text"
                                     placeholder="e.g., 1234567890"
                                     value={pnr}
-                                    onChange={(e) => setPnr(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                                    onChange={(e) => setPnr(e.target.value)}
                                     className="pnr-input"
                                     maxLength={10}
                                 />
@@ -60,7 +96,7 @@ const OrderPage = ({ onPNRSubmit }) => {
                                 type="submit"
                                 variant="light"
                                 size="lg"
-                                disabled={pnr.length !== 10 || isLoading}
+                                disabled={!pnr || isLoading}
                                 className="pnr-button"
                             >
                                 {isLoading ? (

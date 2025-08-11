@@ -9,6 +9,7 @@ import LoginPage from './Components/pages/LoginPage/LoginPage';
 import SignupPage from './Components/pages/SignupPage/SignupPage';
 import DeliveryDashboard from './Components/pages/DeliveryDashBoard/DeliveryDashBoard';
 import OrderPage from './Components/pages/OrderPage/OrderPage';
+import OrderFlow from './Components/pages/BookingPage/OrderFlow';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path='/admin-dashboard' element={<AdminDashboard />} />
         <Route path='/restaurant-dashboard' element={<RestaurantDashBoard />} />
         <Route path='/delivery-dashboard' element={<DeliveryDashboard />} />
+        <Route path='/orderflow' element={<OrderFlow />} />
 
       </Routes>
     </Router>
