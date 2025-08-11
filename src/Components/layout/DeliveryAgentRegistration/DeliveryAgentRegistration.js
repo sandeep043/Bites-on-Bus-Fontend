@@ -9,12 +9,12 @@ const DeliveryAgentRegistration = () => {
         name: '',
         email: '',
         phone: '',
-        address: '',
         password: '',
         idNumber: '',
         vehicleType: '',
         licensePlate: '',
-        zone: '',
+        stop: '',
+        city: '',
 
     });
 
@@ -27,13 +27,14 @@ const DeliveryAgentRegistration = () => {
                 name: agentData.name,
                 email: agentData.email,
                 phone: agentData.phone,
-                address: agentData.address,
                 password: agentData.password,
                 idNumber: agentData.idNumber,
                 vehicleType: agentData.vehicleType,
                 licensePlate: agentData.licensePlate,
-                zone: agentData.zone,
+                zone: { stop: agentData.stop, city: agentData.city }
+
             };
+
 
 
             const response = await axios.post(
@@ -256,11 +257,22 @@ const DeliveryAgentRegistration = () => {
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label>Delivery Zone</label>
+                                        <label>Delivery Stop Name</label>
                                         <input
                                             type="text"
-                                            name="zone"
-                                            value={agentForm.zone}
+                                            name="stop"
+                                            value={agentForm.stop}
+                                            onChange={handleChange}
+                                            placeholder="Enter license plate number"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Delivery City</label>
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            value={agentForm.city}
                                             onChange={handleChange}
                                             placeholder="Enter license plate number"
                                             required

@@ -18,7 +18,7 @@ const RestaurantRegistration = () => {
     const [restaurantForm, setRestaurantForm] = useState({
         name: '',
         cuisine: '',
-        location: '',
+        location: {},
         contactNumber: '',
         email: '',
         open: '',
@@ -73,7 +73,11 @@ const RestaurantRegistration = () => {
                 restaurant: {
                     name: restaurantForm.name,
                     cuisineType: restaurantForm.cuisine,
-                    location: restaurantForm.location,
+                    location: {
+                        stop: restaurantForm.stop,
+                        city: restaurantForm.city
+
+                    },
                     contactNumber: restaurantForm.contactNumber,
                     openingHours: {
                         open: restaurantForm.open,
@@ -377,44 +381,31 @@ const RestaurantRegistration = () => {
                                         </div>
                                     </div>
 
-                                    <div className="form-group full-width">
-                                        <label>Address</label>
-                                        <div className="input-with-icon">
-                                            <MapPin size={18} />
-                                            <input
-                                                type="text"
-                                                name="location"
-                                                value={restaurantForm.location}
-                                                onChange={handleRestaurantChange}
-                                                placeholder="Enter restaurant address"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    {/* <div className="form-group">
-                                        <label>Latitude</label>
+
+                                    <div className="form-group">
+                                        <label>Stop Name</label>
                                         <input
-                                            type="number"
-                                            name="latitude"
-                                            value={restaurantForm.latitude}
+                                            type="text"
+                                            name="stop"
+                                            value={restaurantForm.location.stop}
                                             onChange={handleRestaurantChange}
-                                            placeholder="Enter latitude"
+                                            placeholder="Enter Stop Name"
                                             step="any"
                                             required
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label>Longitude</label>
+                                        <label>City</label>
                                         <input
-                                            type="number"
-                                            name="longitude"
-                                            value={restaurantForm.longitude}
+                                            type="text"
+                                            name="city"
+                                            value={restaurantForm.location.city}
                                             onChange={handleRestaurantChange}
-                                            placeholder="Enter longitude"
+                                            placeholder="Enter City"
                                             step="any"
                                             required
                                         />
-                                    </div> */}
+                                    </div>
 
                                     <div className="form-group">
                                         <label>Opening Hours</label>
@@ -444,37 +435,7 @@ const RestaurantRegistration = () => {
                                         </div>
                                     </div>
 
-                                    {/* <div className="form-group">
-                                        <label>Delivery Fee ($)</label>
-                                        <div className="input-with-icon">
-                                            <DollarSign size={18} />
-                                            <input
-                                                type="number"
-                                                name="deliveryFee"
-                                                value={restaurantForm.deliveryFee}
-                                                onChange={handleRestaurantChange}
-                                                placeholder="0.00"
-                                                step="0.01"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
 
-                                    <div className="form-group">
-                                        <label>Minimum Order ($)</label>
-                                        <div className="input-with-icon">
-                                            <DollarSign size={18} />
-                                            <input
-                                                type="number"
-                                                name="minimumOrder"
-                                                value={restaurantForm.minimumOrder}
-                                                onChange={handleRestaurantChange}
-                                                placeholder="0.00"
-                                                step="0.01"
-                                                required
-                                            />
-                                        </div>
-                                    </div> */}
 
 
                                 </div>
@@ -516,7 +477,7 @@ const RestaurantRegistration = () => {
                                 </div>
 
                                 <div className="card-info">
-                                    <p><strong>Owner:</strong> {restaurant.owner.name}</p>
+                                    {/* <p><strong>Owner:</strong> {restaurant.owner.name}</p> */}
                                     <p><strong>Cuisine:</strong> {restaurant.cuisineType}</p>
 
                                     <div className="restaurant-stats">

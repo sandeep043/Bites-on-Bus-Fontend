@@ -146,6 +146,7 @@ const SignupPage = () => {
             }
             else if (role === 'restaurant') {
                 navigate('/restaurant-dashboard');
+                navigate('/restaurant-dashboard', { state: { role, response } });
             }
             else if (role === 'admin') {
                 navigate('/admin-dashboard');

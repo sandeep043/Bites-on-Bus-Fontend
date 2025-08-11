@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import {
     Card,
     Button,
@@ -30,26 +30,86 @@ import {
     Truck
 } from "lucide-react";
 import Header from "../../layout/Header/Header";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 
 import { updateOrderStatus, getRestaurantOrders, subscribeToOrderUpdates } from "../../lib/orderManger";
 
 const RestaurantDashBoard = () => {
+    const location = useLocation();
     const [activeOrders, setActiveOrders] = useState([]);
     const [completedOrders, setCompletedOrders] = useState([]);
-    const restaurantId = "rest_001"; // This would come from auth context
+    const restaurantId = "rest_001"; // This would come from auth context  
+    const [restaurantData, setRestaurantData] = useState(null);
 
-    const [menuItems, setMenuItems] = useState([
-        { id: '1', name: 'Butter Chicken', price: 280, category: 'Main Course', available: true },
-        { id: '2', name: 'Dal Makhani', price: 180, category: 'Main Course', available: true },
-        { id: '3', name: 'Garlic Naan', price: 60, category: 'Bread', available: true },
-        { id: '4', name: 'Biryani', price: 320, category: 'Rice', available: false }
-    ]);
+    const { role, response } = location.state || {}// Mocked for this example 
+
+    console.log('Role:', role);
+    console.log('Response:', response);
+
+
+    const fetchRestaurantData = async () => {
+        try {
+            console.log("Fetching restaurant data for ID:", response.owner.ownedRestaurant);
+            const Responsedata = await axios.get(`http://localhost:4000/api/restaurant/${response.owner.ownedRestaurant}`);
+            if (Responsedata) {
+                setRestaurantData(Responsedata.data.restaurant);
+            }
+        } catch (error) {
+            console.error('Error fetching restaurants:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchRestaurantData();
+    }, []);
+
+
+    console.log('Restaurant Data:', restaurantData?.menu);
+
+
+    const addMenuItem = async (restaurantId, menuItem) => {
+        try {
+            // restaurantId as query parameter
+            const response = await axios.post(
+                `http://localhost:4000/api/restaurant/${restaurantId}/menu`,
+                menuItem, // payload
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            console.log('Menu item added:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error adding menu item:', error.response?.data || error.message);
+            throw error;
+        }
+    };
+
+
+
+    const [menuItems, setMenuItems] = useState([]);
+
+    useEffect(() => {
+        if (restaurantData && restaurantData.menu) {
+            setMenuItems(restaurantData.menu);
+        }
+    }, [restaurantData]);
+
+
+    // name: "Onion Dosa",
+    // price: 70,
+    // prepTime: 15,
+    // dietaryTags: ["vegetarian"],
+    // isAvailable: true
 
     const [newItem, setNewItem] = useState({
         name: '',
         price: '',
-        category: '',
-        description: ''
+        dietaryTags: [],
+        isAvailable: ''
     });
 
     useEffect(() => {
@@ -81,6 +141,62 @@ const RestaurantDashBoard = () => {
         }
     };
 
+
+    const deleteMenuItem = async (restaurantId, menuItemId) => {
+        try {
+            const response = await axios.delete(
+                `http://localhost:4000/api/restaurant/${restaurantId}/menu/${menuItemId}`
+            );
+            console.log('Menu item deleted:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting menu item:', error.response?.data || error.message);
+            throw error;
+        }
+    };
+
+    const updateMenuItemAvailability = async (restaurantId, menuItemId, isAvailable) => {
+        try {
+            const response = await axios.patch(
+                `http://localhost:4000/api/restaurant/${restaurantId}/menu/${menuItemId}/availability`,
+                { isAvailable }, // payload
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            console.log('Menu item availability updated:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating menu item availability:', error.response?.data || error.message);
+            throw error;
+        }
+    };
+
+
+    const handleAddMenuItem = async (item) => {
+        if (!item.name || !item.price) {
+            alert('Please enter both name and price for the menu item.');
+            return;
+        }
+        try {
+            await addMenuItem(restaurantData._id, item);
+            // 2. Refetch restaurant data to get updated menu
+            await fetchRestaurantData();
+            // Optionally reset form
+            setNewItem({
+                name: '',
+                price: '',
+                dietaryTags: [],
+                isAvailable: ''
+            });
+        } catch (error) {
+            console.error('Error adding menu item:', error);
+        }
+    };
+
+
     const handleUpdateOrderStatus = async (orderId, newStatus) => {
         try {
             await updateOrderStatus(orderId, newStatus);
@@ -97,7 +213,24 @@ const RestaurantDashBoard = () => {
             )
         );
     };
-
+    const handleToggleItemAvailability = async (item) => {
+        try {
+            await updateMenuItemAvailability(restaurantData._id, item.id, !item.available);
+            await fetchRestaurantData();
+        } catch (error) {
+            console.error('Error toggling item availability:', error);
+        }
+    };
+    const handleDeleteMenuItem = async (item) => {
+        if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {
+            try {
+                await deleteMenuItem(restaurantData._id, item.id);
+                await fetchRestaurantData();
+            } catch (error) {
+                console.error('Error deleting menu item:', error);
+            }
+        }
+    };
     const getStatusBadgeVariant = (status) => {
         switch (status) {
             case 'preparing': return 'warning';
@@ -310,39 +443,54 @@ const RestaurantDashBoard = () => {
                             <Row>
                                 <Col md={6} className="mb-3 mb-md-0">
                                     <div className="d-grid gap-3">
-                                        {menuItems.map((item) => (
-                                            <Card key={item.id} className="p-2">
-                                                <Card.Body className="d-flex justify-content-between align-items-center p-2">
-                                                    <div className="flex-grow-1">
-                                                        <div className="d-flex align-items-center gap-2 mb-1">
-                                                            <h6 className="mb-0" style={{ fontWeight: '500' }}>{item.name}</h6>
-                                                            <Badge bg="light" text="dark" className="fs-6">
-                                                                {item.category}
-                                                            </Badge>
-                                                            <Badge bg={item.available ? 'success' : 'danger'} className="bg-opacity-10">
-                                                                {item.available ? 'Available' : 'Out of Stock'}
-                                                            </Badge>
+                                        {menuItems && menuItems.length > 0 ? (
+                                            menuItems.map((item) => (
+                                                <Card key={item.id} className="p-2">
+                                                    <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                                                        <div className="flex-grow-1">
+                                                            <div className="d-flex align-items-center gap-2 mb-1">
+                                                                <h6 className="mb-0" style={{ fontWeight: '500' }}>{item.name}</h6>
+                                                                <Badge bg="light" text="dark" className="fs-6">
+                                                                    {item.category}
+                                                                </Badge>
+                                                                <Badge bg={item.available ? 'success' : 'danger'} className="bg-opacity-10">
+                                                                    {item.available ? 'Available' : 'Out of Stock'}
+                                                                </Badge>
+                                                            </div>
+                                                            <p className="text-primary fw-bold mb-0">₹{item.price}</p>
                                                         </div>
-                                                        <p className="text-primary fw-bold mb-0">₹{item.price}</p>
-                                                    </div>
-                                                    <div className="d-flex gap-1">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline-secondary"
-                                                            onClick={() => toggleItemAvailability(item.id)}
-                                                        >
-                                                            {item.available ? 'Disable' : 'Enable'}
-                                                        </Button>
-                                                        <Button size="sm" variant="outline-secondary">
-                                                            <Edit size={16} />
-                                                        </Button>
-                                                        <Button size="sm" variant="outline-danger">
-                                                            <Trash2 size={16} />
-                                                        </Button>
-                                                    </div>
-                                                </Card.Body>
-                                            </Card>
-                                        ))}
+                                                        <div className="d-flex gap-1">
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline-secondary"
+                                                                onClick={() => handleToggleItemAvailability(item)}
+                                                            >
+                                                                {item.available ? 'Disable' : 'Enable'}
+                                                            </Button>
+                                                            <Button size="sm" variant="outline-secondary">
+                                                                <Edit size={16} />
+                                                            </Button>
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline-danger"
+                                                                onClick={() => handleDeleteMenuItem(item)}
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </Button>
+                                                        </div>
+                                                    </Card.Body>
+                                                </Card>
+                                            ))
+                                        ) : (
+                                            <div className="text-center py-5">
+                                                <h5 className="mb-3">No menu items found.</h5>
+                                                <p className="text-muted mb-3">Add items to your menu to start receiving orders.</p>
+                                                {/* <Button variant="primary" className="d-flex align-items-center mx-auto" >
+                                                    <Plus size={16} className="me-2" />
+                                                    Add New Item
+                                                </Button> */}
+                                            </div>
+                                        )}
                                     </div>
                                 </Col>
 
@@ -371,20 +519,44 @@ const RestaurantDashBoard = () => {
                                                     />
                                                 </Form.Group>
                                                 <Form.Group className="mb-3">
-                                                    <Form.Label>Category</Form.Label>
+                                                    <Form.Label>Available</Form.Label>
+                                                    <Form.Select
+                                                        value={newItem.isAvailable}
+                                                        onChange={(e) =>
+                                                            setNewItem(prev => ({
+                                                                ...prev,
+                                                                isAvailable: e.target.value === "true"
+                                                            }))
+                                                        }
+                                                    >
+                                                        <option value="">Select availability</option>
+                                                        <option value="true">Available</option>
+                                                        <option value="false">Not Available</option>
+                                                    </Form.Select>
+                                                </Form.Group>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Dietary Tags</Form.Label>
                                                     <FormControl
-                                                        placeholder="Enter category"
-                                                        value={newItem.category}
-                                                        onChange={(e) => setNewItem(prev => ({ ...prev, category: e.target.value }))}
+                                                        placeholder="Enter tags separated by commas (e.g. vegetarian,vegan,gluten-free)"
+                                                        value={newItem.dietaryTags.join(',')}
+                                                        onChange={(e) =>
+                                                            setNewItem(prev => ({
+                                                                ...prev,
+                                                                dietaryTags: e.target.value
+                                                                    .split(',')
+                                                                    .map(tag => tag.trim())
+                                                                    .filter(tag => tag.length > 0)
+                                                            }))
+                                                        }
                                                     />
                                                 </Form.Group>
                                                 <Form.Group className="mb-3">
-                                                    <Form.Label>Description</Form.Label>
+                                                    <Form.Label>prepTime</Form.Label>
                                                     <FormControl
-                                                        as="textarea"
-                                                        placeholder="Enter item description"
-                                                        value={newItem.description}
-                                                        onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
+                                                        type="number"
+                                                        placeholder="Enter item prepTime"
+                                                        value={newItem.prepTime}
+                                                        onChange={(e) => setNewItem(prev => ({ ...prev, prepTime: e.target.value }))}
                                                         rows={3}
                                                     />
                                                 </Form.Group>
@@ -392,6 +564,7 @@ const RestaurantDashBoard = () => {
                                                     variant="primary"
                                                     disabled={!newItem.name || !newItem.price}
                                                     className="w-100"
+                                                    onClick={() => handleAddMenuItem(newItem)}
                                                 >
                                                     Add Item
                                                 </Button>
