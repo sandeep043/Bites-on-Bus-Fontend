@@ -9,7 +9,8 @@ import LoginPage from './Components/pages/LoginPage/LoginPage';
 import SignupPage from './Components/pages/SignupPage/SignupPage';
 import DeliveryDashboard from './Components/pages/DeliveryDashBoard/DeliveryDashBoard';
 import OrderPage from './Components/pages/OrderPage/OrderPage';
-import OrderFlow from './Components/pages/BookingPage/OrderFlow';
+import OrderFlow from './Components/pages/OrderFlow/OrderFlow';
+import OrderPreview from './Components/pages/OrderPreview/OrderPreview';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path='/restaurant-dashboard' element={<RestaurantDashBoard />} />
         <Route path='/delivery-dashboard' element={<DeliveryDashboard />} />
         <Route path='/orderflow' element={<OrderFlow />} />
+        <Route path='/orderpreview' element={<OrderPreview />} />
 
       </Routes>
     </Router>

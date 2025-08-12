@@ -25,20 +25,20 @@ const OrderFlow = () => {
     });
     const [user, setUser] = useState(null);
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-    const { pnr, response } = location.state || {}
+    const { pnr, PNRresponse } = location.state || {}
     const [restaurantDetails, setRestaurantDetails] = useState([]);
     const [restaurantINFO, setRestaurantINFO] = useState({});
 
-    console.log("PNR Details:", response);
+    console.log("PNR Details:", PNRresponse);
 
     // Initialize Stripe
     const stripePromise = loadStripe('pk_test_51Rue31Eun4RG358LOwTZOGlJgJlQkrlayjQUXRrmWo9x408RSyn0pNX440UF3rICCZOD3Zc0xsJLaD4YF8Y8lv9Z00CX0ptN3L');
 
 
-    const busStops = response.stops || [{}];
-    console.log("Bus Stops:", busStops);
+    const busStops = PNRresponse.stops || [{}];
 
-    console.log("Selected Stop:", selectedStop);
+
+
 
     useEffect(() => {
         const fetchRestaurants = async () => {
@@ -48,7 +48,7 @@ const OrderFlow = () => {
                         stop: selectedStop.name,
                         city: selectedStop.location
                     };
-                    console.log("Fetching restaurants for stop:", params);
+
 
                     const response = await axios.get(
                         'http://localhost:4000/api/restaurant/location',
@@ -65,7 +65,7 @@ const OrderFlow = () => {
         fetchRestaurants();
     }, [selectedStop])
 
-    console.log("Restaurant Details:", restaurantDetails);
+
 
 
 
@@ -96,9 +96,8 @@ const OrderFlow = () => {
         fetchRestaurants();
     }, [selectedRestaurant])
 
-    //console.log("Restaurant INFO:", restaurantINFO.restaurant.menu);
 
-    const menuItems = restaurantINFO.restaurant.menu || [];
+    const menuItems = restaurantINFO.restaurant?.menu || [];
     console.log("Menu Items:", menuItems);
 
 
@@ -106,10 +105,10 @@ const OrderFlow = () => {
 
 
     const addToCart = (item) => {
-        const existingItem = cart.find(cartItem => cartItem.itemId === item.itemId);
+        const existingItem = cart.find(cartItem => cartItem._id === item);
         if (existingItem) {
             setCart(cart.map(cartItem =>
-                cartItem.itemId === item.itemId
+                cartItem._id === item._id
                     ? { ...cartItem, quantity: cartItem.quantity + 1 }
                     : cartItem
             ));
@@ -120,7 +119,7 @@ const OrderFlow = () => {
 
     const updateQuantity = (itemId, change) => {
         setCart(cart.map(item => {
-            if (item.itemId === itemId) {
+            if (item._id === itemId) {
                 const newQuantity = item.quantity + change;
                 return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
             }
@@ -133,40 +132,26 @@ const OrderFlow = () => {
     };
 
     const handleCheckout = async () => {
-        if (!customerInfo.name || !customerInfo.phone || !customerInfo.seatNumber) {
-            alert('Please fill in all required fields');
-            return;
-        }
-
-        setIsProcessingPayment(true);
-
-        try {
-            const mockPaymentData = {
-                cart,
-                customerInfo,
-                restaurant: restaurants.find(r => r.id === selectedRestaurant),
-                stop: busStops.find(s => s._id === selectedStop.stopId),
-                pnr,
-                totalAmount: getTotalAmount()
-            };
-
-            localStorage.setItem('pendingOrder', JSON.stringify(mockPaymentData));
-
-            const mockStripeUrl = `https://checkout.stripe.com/pay/demo?amount=${getTotalAmount()}&currency=inr&return_url=${window.location.origin}/payment-success`;
-
-            const data = { url: mockStripeUrl };
-
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                throw new Error('Failed to create payment session');
+        navigate('/orderpreview', {
+            state: {
+                PNRresponse: PNRresponse,
+                customerDetails: {
+                    name: customerInfo.name,
+                    phone: customerInfo.phone,
+                    seatNo: customerInfo.seatNumber
+                },
+                deliveryLocation: {
+                    stop: selectedStop.name,
+                    city: selectedStop.location
+                },
+                orderItems: cart,
+                totalAmount: getTotalAmount(),
+                estimatedDeliveryTime: "3:45 PM - 4:00 PM"
             }
-        } catch (error) {
-            console.error('Payment error:', error);
-            alert('Failed to process payment. Please try again.');
-        } finally {
-            setIsProcessingPayment(false);
-        }
+        });
+        // Reset cart after checkout
+
+
     };
 
     const handleAuthSuccess = (userData) => {
@@ -336,7 +321,7 @@ const OrderFlow = () => {
                             {/* Menu Items */}
                             <Col lg={8} className="menu-items">
                                 {menuItems.map((item) => (
-                                    <Card key={item.itemId} className="menu-item">
+                                    <Card key={item._id} className="menu-item">
                                         <Card.Body>
                                             <div className="menu-item-content">
                                                 <div className="menu-item-image"></div>
@@ -373,7 +358,7 @@ const OrderFlow = () => {
                                         ) : (
                                             <div className="cart-content">
                                                 {cart.map((item) => (
-                                                    <div key={item.itemId} className="cart-item">
+                                                    <div key={item._id} className="cart-item">
                                                         <div className="item-info">
                                                             <h4>{item.name}</h4>
                                                             <p>₹{item.price}</p>
@@ -381,7 +366,7 @@ const OrderFlow = () => {
                                                         <div className="item-quantity">
                                                             <Button
                                                                 variant="outline-secondary"
-                                                                onClick={() => updateQuantity(item.itemId, -1)}
+                                                                onClick={() => updateQuantity(item._id, -1)}
                                                                 size="sm"
                                                             >
                                                                 <Minus className="icon" />
@@ -389,7 +374,7 @@ const OrderFlow = () => {
                                                             <span>{item.quantity}</span>
                                                             <Button
                                                                 variant="outline-secondary"
-                                                                onClick={() => updateQuantity(item.itemId, 1)}
+                                                                onClick={() => updateQuantity(item._id, 1)}
                                                                 size="sm"
                                                             >
                                                                 <Plus className="icon" />
@@ -480,7 +465,7 @@ const OrderFlow = () => {
                                     <h3>Order Summary</h3>
                                     <div className="summary-items">
                                         {cart.map((item) => (
-                                            <div key={item.itemId} className="summary-item">
+                                            <div key={item._id} className="summary-item">
                                                 <span>{item.name} × {item.quantity}</span>
                                                 <span>₹{item.price * item.quantity}</span>
                                             </div>

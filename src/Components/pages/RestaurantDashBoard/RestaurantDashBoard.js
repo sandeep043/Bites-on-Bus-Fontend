@@ -109,7 +109,8 @@ const RestaurantDashBoard = () => {
         name: '',
         price: '',
         dietaryTags: [],
-        isAvailable: ''
+        isAvailable: false,
+        prepTime: ''
     });
 
     useEffect(() => {
@@ -143,6 +144,8 @@ const RestaurantDashBoard = () => {
 
 
     const deleteMenuItem = async (restaurantId, menuItemId) => {
+
+
         try {
             const response = await axios.delete(
                 `http://localhost:4000/api/restaurant/${restaurantId}/menu/${menuItemId}`
@@ -189,7 +192,9 @@ const RestaurantDashBoard = () => {
                 name: '',
                 price: '',
                 dietaryTags: [],
-                isAvailable: ''
+                isAvailable: '',
+                prepTime: ''
+
             });
         } catch (error) {
             console.error('Error adding menu item:', error);
@@ -206,16 +211,16 @@ const RestaurantDashBoard = () => {
         }
     };
 
-    const toggleItemAvailability = (itemId) => {
-        setMenuItems(items =>
-            items.map(item =>
-                item.id === itemId ? { ...item, available: !item.available } : item
-            )
-        );
-    };
+    // const toggleItemAvailability = (itemId) => {
+    //     setMenuItems(items =>
+    //         items.map(item =>
+    //             item.id === itemId ? { ...item, available: !item.available } : item
+    //         )
+    //     );
+    // };
     const handleToggleItemAvailability = async (item) => {
         try {
-            await updateMenuItemAvailability(restaurantData._id, item.id, !item.available);
+            await updateMenuItemAvailability(restaurantData._id, item._id, !item.isAvailable);
             await fetchRestaurantData();
         } catch (error) {
             console.error('Error toggling item availability:', error);
@@ -224,7 +229,7 @@ const RestaurantDashBoard = () => {
     const handleDeleteMenuItem = async (item) => {
         if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {
             try {
-                await deleteMenuItem(restaurantData._id, item.id);
+                await deleteMenuItem(restaurantData._id, item._id);
                 await fetchRestaurantData();
             } catch (error) {
                 console.error('Error deleting menu item:', error);
@@ -453,8 +458,8 @@ const RestaurantDashBoard = () => {
                                                                 <Badge bg="light" text="dark" className="fs-6">
                                                                     {item.category}
                                                                 </Badge>
-                                                                <Badge bg={item.available ? 'success' : 'danger'} className="bg-opacity-10">
-                                                                    {item.available ? 'Available' : 'Out of Stock'}
+                                                                <Badge bg={item.isAvailable ? 'success' : 'danger'} className="bg-opacity-20">
+                                                                    {item.isAvailable ? 'Available' : 'Out of Stock'}
                                                                 </Badge>
                                                             </div>
                                                             <p className="text-primary fw-bold mb-0">₹{item.price}</p>
@@ -465,10 +470,7 @@ const RestaurantDashBoard = () => {
                                                                 variant="outline-secondary"
                                                                 onClick={() => handleToggleItemAvailability(item)}
                                                             >
-                                                                {item.available ? 'Disable' : 'Enable'}
-                                                            </Button>
-                                                            <Button size="sm" variant="outline-secondary">
-                                                                <Edit size={16} />
+                                                                {item.isAvailable ? 'Disable' : 'Enable'}
                                                             </Button>
                                                             <Button
                                                                 size="sm"

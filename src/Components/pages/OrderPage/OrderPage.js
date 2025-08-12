@@ -41,14 +41,14 @@ const OrderPage = () => {
             setIsLoading(true);
             setTimeout(async () => {
 
-                const response = await onPNRSubmit(pnr);
+                const PNRresponse = await onPNRSubmit(pnr);
                 setIsLoading(false);
-                if (response) {
-                    setPnrDetails(response);
+                if (PNRresponse) {
+                    setPnrDetails(PNRresponse);
                     console.log("PNR Details:", pnrDetails);
                     toast.success("PNR details fetched successfully!");
                     // navigate('/paymentPage', { state: { adults, flightDetails, airLineDetails
-                    navigate('/orderflow', { state: { pnr, response } });
+                    navigate('/orderflow', { state: { pnr, PNRresponse } });
 
                 }
 
