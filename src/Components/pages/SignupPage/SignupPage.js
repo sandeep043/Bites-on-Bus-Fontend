@@ -22,7 +22,7 @@ const SignupPage = () => {
 
     const postUser = async () => {
 
-
+        
 
         try {
             const payload = {

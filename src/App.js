@@ -11,6 +11,7 @@ import DeliveryDashboard from './Components/pages/DeliveryDashBoard/DeliveryDash
 import OrderPage from './Components/pages/OrderPage/OrderPage';
 import OrderFlow from './Components/pages/OrderFlow/OrderFlow';
 import OrderPreview from './Components/pages/OrderPreview/OrderPreview';
+import StatusPage from './Components/pages/StatusPage/StatusPage';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path='/delivery-dashboard' element={<DeliveryDashboard />} />
         <Route path='/orderflow' element={<OrderFlow />} />
         <Route path='/orderpreview' element={<OrderPreview />} />
+        <Route path='/payment/:status/:id/:payment_id' element={<StatusPage />} />
 
       </Routes>
     </Router>

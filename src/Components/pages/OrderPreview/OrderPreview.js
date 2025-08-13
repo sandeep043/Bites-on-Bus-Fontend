@@ -78,17 +78,20 @@ export default function OrderPreview() {
     //             estimatedDeliveryTime: "3:45 PM - 4:00 PM"
     //         } 
 
-    const { PNRresponse, customerDetails, deliveryLocation, orderItems, totalAmount, estimatedDeliveryTime } = location.state || {};
+    const { PNRresponse, customerDetails, deliveryLocation, orderItems, totalAmount, estimatedDeliveryTime, restaurant_id } = location.state || {};
     const mockOrder = {
-        PNRresponse: PNRresponse,
+        PNRresponse: {
+            PNR_ID: PNRresponse._id,
+            PNR: PNRresponse.pnr
+        },
         customerDetails: customerDetails,
         DeliveryLocation: deliveryLocation,
         Orderitems: orderItems,
         totalAmount: totalAmount,
-        status: "confirmed",
         orderTimeandDate: "2024-11-30T14:30:00.000Z",
         isOtpVerified: false,
-        estimatedDeliveryTime: "3:45 PM - 4:00 PM"
+        estimatedDeliveryTime: "3:45 PM - 4:00 PM",
+        restaurant_id: restaurant_id  // Default restaurant ID if not provided
     };
     const [order, setOrder] = useState(mockOrder);
 
@@ -160,8 +163,6 @@ export default function OrderPreview() {
                         <div className="col-lg-4 d-flex flex-column gap-4">
                             <PaymentSection
                                 order={order}
-                                onPaymentSuccess={handlePaymentSuccess}
-                                onPaymentFailure={handlePaymentFailure}
                             />
                             <OrderActions
                                 order={order}

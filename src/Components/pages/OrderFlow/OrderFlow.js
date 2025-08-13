@@ -146,7 +146,8 @@ const OrderFlow = () => {
                 },
                 orderItems: cart,
                 totalAmount: getTotalAmount(),
-                estimatedDeliveryTime: "3:45 PM - 4:00 PM"
+                estimatedDeliveryTime: "3:45 PM - 4:00 PM",
+                restaurant_id: selectedRestaurant
             }
         });
         // Reset cart after checkout
