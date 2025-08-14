@@ -41,11 +41,12 @@ const RestaurantDashBoard = () => {
     const [completedOrders, setCompletedOrders] = useState([]);
     const restaurantId = "rest_001"; // This would come from auth context  
     const [restaurantData, setRestaurantData] = useState(null);
-
+    const [restaurantActiveOrders, setRestaurantActiveOrders] = useState([]);
     const { role, response } = location.state || {}// Mocked for this example 
+    const [menuItems, setMenuItems] = useState([]);
 
-    console.log('Role:', role);
-    console.log('Response:', response);
+    // console.log('Role:', role);
+    // console.log('Response:', response);
 
 
     const fetchRestaurantData = async () => {
@@ -55,6 +56,7 @@ const RestaurantDashBoard = () => {
             if (Responsedata) {
                 setRestaurantData(Responsedata.data.restaurant);
             }
+
         } catch (error) {
             console.error('Error fetching restaurants:', error);
         }
@@ -64,8 +66,8 @@ const RestaurantDashBoard = () => {
         fetchRestaurantData();
     }, []);
 
-
-    console.log('Restaurant Data:', restaurantData?.menu);
+    // console.log('Restaurant Data:', restaurantData);
+    // console.log('Restaurant menu data:', restaurantData?.menu);
 
 
     const addMenuItem = async (restaurantId, menuItem) => {
@@ -88,22 +90,47 @@ const RestaurantDashBoard = () => {
         }
     };
 
+    const getActiveOrdersByRestaurant = async (restaurantId) => {
+        try {
+            const response = await axios.get(`http://localhost:4000/api/order/restaurant/${restaurantId}/active`);
+            return response.data.data;
+        } catch (error) {
+            console.error('Error fetching active orders:', error);
+            throw error;
+        }
+    }
 
 
-    const [menuItems, setMenuItems] = useState([]);
+    const updateOrderStatus = async (orderId, status) => {
+        try {
+            const payload = { status }; // send as object
+            const response = await axios.patch(
+                `http://localhost:4000/api/order/update-status/${orderId}`,
+                payload,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            console.log('Order status updated:', response);
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
+    }
+
+
+
 
     useEffect(() => {
+        fetchOrders();
         if (restaurantData && restaurantData.menu) {
             setMenuItems(restaurantData.menu);
         }
     }, [restaurantData]);
 
 
-    // name: "Onion Dosa",
-    // price: 70,
-    // prepTime: 15,
-    // dietaryTags: ["vegetarian"],
-    // isAvailable: true
+
 
     const [newItem, setNewItem] = useState({
         name: '',
@@ -113,24 +140,12 @@ const RestaurantDashBoard = () => {
         prepTime: ''
     });
 
-    useEffect(() => {
-        fetchOrders();
-
-        const subscription = subscribeToOrderUpdates((payload) => {
-            console.log('Order update received:', payload);
-            fetchOrders();
-        });
-
-        return () => {
-            subscription.unsubscribe();
-        };
-    }, []);
-
     const fetchOrders = async () => {
         try {
-            const orders = await getRestaurantOrders(restaurantId);
+            const orders = await getActiveOrdersByRestaurant(restaurantData._id);
+            console.log('Fetched orders:', orders);
             const active = orders.filter(order =>
-                ['preparing', 'ready', 'assigned', 'picked-up', 'in-transit'].includes(order.status)
+                ['Placed', 'Preparing', 'Ready', 'Assigned', 'Ready to pickup', 'Picked-up', 'In-transit'].includes(order.status)
             );
             const completed = orders.filter(order =>
                 order.status === 'completed' || order.status === 'delivered'
@@ -144,8 +159,6 @@ const RestaurantDashBoard = () => {
 
 
     const deleteMenuItem = async (restaurantId, menuItemId) => {
-
-
         try {
             const response = await axios.delete(
                 `http://localhost:4000/api/restaurant/${restaurantId}/menu/${menuItemId}`
@@ -202,6 +215,9 @@ const RestaurantDashBoard = () => {
     };
 
 
+
+
+
     const handleUpdateOrderStatus = async (orderId, newStatus) => {
         try {
             await updateOrderStatus(orderId, newStatus);
@@ -211,13 +227,6 @@ const RestaurantDashBoard = () => {
         }
     };
 
-    // const toggleItemAvailability = (itemId) => {
-    //     setMenuItems(items =>
-    //         items.map(item =>
-    //             item.id === itemId ? { ...item, available: !item.available } : item
-    //         )
-    //     );
-    // };
     const handleToggleItemAvailability = async (item) => {
         try {
             await updateMenuItemAvailability(restaurantData._id, item._id, !item.isAvailable);
@@ -226,6 +235,7 @@ const RestaurantDashBoard = () => {
             console.error('Error toggling item availability:', error);
         }
     };
+
     const handleDeleteMenuItem = async (item) => {
         if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {
             try {
@@ -317,7 +327,7 @@ const RestaurantDashBoard = () => {
                                 </h2>
                                 <div className="d-flex gap-2">
                                     <Badge bg="warning" className="bg-opacity-10 text-warning">
-                                        {activeOrders.filter(o => o.status === 'preparing').length} Preparing
+                                        {activeOrders.filter(o => o.status === 'Preparing').length} Preparing
                                     </Badge>
                                     <Badge bg="success" className="bg-opacity-10 text-success">
                                         {activeOrders.filter(o => o.status === 'ready').length} Ready
@@ -341,10 +351,11 @@ const RestaurantDashBoard = () => {
                                                         </Badge>
                                                     </div>
                                                     <p className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>
-                                                        PNR: {order.pnr} | {order.customer} | Seat {order.seat}
+                                                        PNR: {order.PNR} | {order.customerDetails.name
+                                                        } | Seat {order.customerDetails.seatNo}
                                                     </p>
                                                     <p className="text-muted" style={{ fontSize: '0.875rem' }}>
-                                                        Phone: {order.phone} | Stop: {order.stop_name}
+                                                        Phone: {order.customerDetails.phone} | Stop: {order.stop}
                                                     </p>
 
                                                     {order.delivery_agent_id && order.agent_name && (
@@ -379,7 +390,7 @@ const RestaurantDashBoard = () => {
                                             </div>
 
                                             <ListGroup variant="flush" className="mb-3">
-                                                {order.items.map((item, index) => (
+                                                {order.Orderitems.map((item, index) => (
                                                     <ListGroup.Item key={index} className="d-flex justify-content-between px-0">
                                                         <span style={{ fontSize: '0.875rem' }}>
                                                             {item.name} × {item.quantity}
@@ -392,27 +403,27 @@ const RestaurantDashBoard = () => {
                                             </ListGroup>
 
                                             <div className="d-flex gap-2">
-                                                {order.status === 'preparing' && (
+                                                {order.status === 'Preparing' && (
                                                     <Button
                                                         variant="success"
-                                                        onClick={() => handleUpdateOrderStatus(order.id, 'ready')}
+                                                        onClick={() => handleUpdateOrderStatus(order._id, 'Ready')}
                                                         className="d-flex align-items-center"
                                                     >
                                                         <CheckCircle size={16} className="me-2" />
                                                         Mark Ready
                                                     </Button>
                                                 )}
-                                                {order.status === 'assigned' && order.delivery_agent_id && (
+                                                {order.status === 'Ready' && (
                                                     <Button
                                                         variant="primary"
-                                                        onClick={() => handleUpdateOrderStatus(order.id, 'picked-up')}
+                                                        onClick={() => handleUpdateOrderStatus(order._id, 'Ready to pickup')}
                                                         className="d-flex align-items-center"
                                                     >
                                                         <AlertCircle size={16} className="me-2" />
-                                                        Mark Picked Up
+                                                        Assign a Delivery Agent
                                                     </Button>
                                                 )}
-                                                {order.status === 'in-transit' && (
+                                                {order.status === 'In-transit' && (
                                                     <Button
                                                         variant="info"
                                                         onClick={() => handleUpdateOrderStatus(order.id, 'completed')}

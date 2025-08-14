@@ -15,6 +15,7 @@ const StatusPage = () => {
                     <h1 className='text-4xl text-center'>Payment Id : {payment_id} </h1>
                     <button onClick={() => navigate(-1)} className="px-12 py-2 bg-black text-white">Back</button>
                     <button onClick={() => navigate('/')} className="px-12 py-2 bg-black text-white">Home</button>
+                    <button onClick={() => navigate('/order-tracking')} className="px-12 py-2 bg-black text-white">Home</button>
                 </div>
             </div>
         </>

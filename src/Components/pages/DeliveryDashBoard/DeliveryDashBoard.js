@@ -32,13 +32,20 @@ import {
     subscribeToOrderUpdates
 } from "../../lib/orderManger";
 import "./DeliveryDashBoard.css";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 
 const DeliveryDashBoard = () => {
-    const [isOnline, setIsOnline] = useState(true);
+    const location = useLocation();
+    const [isOnline, setIsOnline] = useState('offline');
     const [availableOrders, setAvailableOrders] = useState([]);
     const [assignedOrders, setAssignedOrders] = useState([]);
     const [currentDelivery, setCurrentDelivery] = useState(null);
-    const agentId = "agent_001"; // This would come from auth context
+    const { role, response } = location.state || {}// Mocked for this example  
+    console.log("role", role);
+    console.log("response", response);
+    const agentId = response.agent._id || "agent_001"; // Use agent ID from response
+
 
     const [deliveryHistory] = useState([
         { id: 'DEL001', customer: 'Raj Patel', amount: 500, time: '2:30 PM', rating: 5 },
@@ -58,19 +65,87 @@ const DeliveryDashBoard = () => {
             subscription.unsubscribe();
         };
     }, []);
+    const getReadyToPickupOrders = async (stop, city) => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/order/ready-to-pickup', {
+                params: { stop, city }
+            });
+            console.log('Ready to pickup orders:', response.data);
+            return response.data.data;
+        } catch (error) {
+            console.error('Error fetching ready to pickup orders:', error);
+            throw error;
+        }
+    };
+    const updateAgentAvailavelity = async (agentId, availavelity) => {
+        try {
+            const response = await axios.patch(
+                `http://localhost:4000/api/agent/availavelity/${agentId}`,
+                { availavelity },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Authorization: `Bearer ${token}` // if using JWT auth
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error updating agent availavelity:', error.response?.data || error.message);
+            throw error;
+        }
+    };
+
+    const assignOrderToAgent = async (orderId) => {
+        try {
+            const response = await axios.post(
+                'http://localhost:4000/api/order/accept-order',
+                { orderId, agentId },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // If you use JWT authentication, include the token
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error accepting order:', error.response?.data || error.message);
+            throw error;
+        }
+    }
+
+
+    const getAgentOrdersById = async (agentId) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:4000/api/agent/orders/${agentId}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Authorization: `Bearer ${token}` // if using JWT auth
+                    }
+                }
+            );
+            return response.data.data;
+        } catch (error) {
+            console.error('Error fetching agent orders:', error.response?.data || error.message);
+            throw error;
+        }
+    };
 
     const fetchOrders = async () => {
         try {
             const [available, assigned] = await Promise.all([
-                getAvailableOrders(),
-                getAgentOrders(agentId)
+                getReadyToPickupOrders(response.agent.zone.stop, response.agent.zone.city),
+                getAgentOrdersById(agentId)
             ]);
 
             setAvailableOrders(available);
             setAssignedOrders(assigned);
 
             const activeDelivery = assigned.find(order =>
-                ['assigned', 'picked-up', 'in-transit'].includes(order.status)
+                ['assigned', 'picked_up', 'in-transit'].includes(order.deliveryStatus)
             );
             setCurrentDelivery(activeDelivery || null);
         } catch (error) {
@@ -86,6 +161,20 @@ const DeliveryDashBoard = () => {
             console.error('Error accepting order:', error);
         }
     };
+
+    const handleChangingOnlineStatus = async (agentId, status) => {
+        try {
+            await updateAgentAvailavelity(agentId, status);
+            fetchOrders();
+            setIsOnline(status);
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+
+    }
+
+
+
 
     const handleUpdateDeliveryStatus = async (orderId, newStatus) => {
         try {
@@ -149,6 +238,7 @@ const DeliveryDashBoard = () => {
         { label: 'Rating', value: '4.8', icon: Star, color: 'text-warning' },
         { label: 'On Time %', value: '95%', icon: Clock, color: 'text-info' }
     ];
+    console.log("assignedOrders", assignedOrders);
 
     return (
         <div className="delivery-dashboard">
@@ -159,18 +249,34 @@ const DeliveryDashBoard = () => {
                 <Row className="dashboard-header align-items-center">
                     <Col>
                         <h1 className="dashboard-title">Delivery Dashboard</h1>
-                        <p className="dashboard-subtitle">Agent ID: DEL2024001</p>
+                        <p className="dashboard-subtitle">{agentId}</p>
+                        <div className="d-flex align-items-center gap-2">
+                            <span
+                                style={{
+                                    display: 'inline-block',
+                                    width: '12px',
+                                    height: '12px',
+                                    borderRadius: '50%',
+                                    backgroundColor: isOnline === 'online' ? '#22c55e' : '#ef4444',
+                                    marginRight: '8px'
+                                }}
+                            ></span>
+                            <span className="dashboard-subtitle">
+                                {isOnline === 'online' ? 'Online' : 'Offline'}
+                            </span>
+                        </div>
                     </Col>
                     <Col xs="auto">
                         <div className="d-flex align-items-center gap-2">
                             <Button
-                                variant={isOnline ? "success" : "outline-danger"}
-                                onClick={() => setIsOnline(!isOnline)}
+                                variant={isOnline === 'online' ? 'danger' : 'success'}
+                                onClick={() => handleChangingOnlineStatus(agentId, isOnline === 'online' ? 'offline' : 'online')}
                             >
-                                {isOnline ? 'Online' : 'Offline'}
+                                {/* {isOnline ? 'Online' : 'Offline'} */}
+                                {isOnline === 'online' ? 'Go Offline' : 'Go Online'}
                             </Button>
-                            <Badge bg={isOnline ? "success" : "danger"} className="bg-opacity-10">
-                                {isOnline ? 'Available' : 'Unavailable'}
+                            <Badge bg={isOnline ? 'bg-success' : 'bg-danger'} className="bg-opacity-10">
+                                {isOnline === 'online' ? 'Available' : 'Unavailable'}
                             </Badge>
                         </div>
                     </Col>
@@ -354,73 +460,87 @@ const DeliveryDashBoard = () => {
                                     Available Orders
                                 </h2>
                                 <Badge bg="success" className="bg-opacity-10 text-success">
-                                    {availableOrders.length} Available
+                                    {isOnline === 'online' ? availableOrders.length : 0} Available
                                 </Badge>
                             </div>
 
-                            {availableOrders.length > 0 ? (
-                                availableOrders.map((order) => (
-                                    <Card key={order.id} className="p-3">
-                                        <Card.Body>
-                                            <div className="d-flex justify-content-between mb-3">
-                                                <div className="flex-grow-1">
-                                                    <div className="d-flex align-items-center gap-2 mb-2">
-                                                        <h5 className="mb-0" style={{ fontWeight: '600' }}>Order #{order.id}</h5>
-                                                        <Badge bg="success">Ready for Pickup</Badge>
-                                                    </div>
-                                                    <p className="text-muted mb-2" style={{ fontSize: '0.875rem' }}>
-                                                        Customer: {order.customer} | Seat {order.seat} | PNR: {order.pnr}
-                                                    </p>
-                                                    <p className="text-muted" style={{ fontSize: '0.875rem' }}>
-                                                        Destination: {order.stop_name}
-                                                    </p>
-                                                </div>
-                                                <div className="text-end">
-                                                    <h5 className="mb-0">₹{order.total}</h5>
-                                                    <p className="text-muted" style={{ fontSize: '0.875rem' }}>
-                                                        {order.items.length} items
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div className="mb-3">
-                                                <h6 className="fw-medium" style={{ fontSize: '0.875rem' }}>Items:</h6>
-                                                <div className="d-grid gap-1">
-                                                    {order.items.map((item, index) => (
-                                                        <div key={index} className="order-item">
-                                                            <span>{item.name} × {item.quantity}</span>
-                                                            <span>₹{item.price * item.quantity}</span>
+                            {isOnline === 'online' ? (
+                                availableOrders.length > 0 ? (
+                                    availableOrders.map((order) => (
+                                        <Card key={order.id} className="p-3">
+                                            <Card.Body>
+                                                <div className="d-flex justify-content-between mb-3">
+                                                    <div className="flex-grow-1">
+                                                        <div className="d-flex align-items-center gap-2 mb-2">
+                                                            <h5 className="mb-0" style={{ fontWeight: '600' }}>Order #{order.id}</h5>
+                                                            <Badge bg="success">Ready for Pickup</Badge>
                                                         </div>
-                                                    ))}
+                                                        <p className="text-muted mb-2" style={{ fontSize: '0.875rem' }}>
+                                                            Customer: {order.customerDetails.name} | Seat {order.customerDetails.seatNo} | PNR: {order.PNR}
+                                                        </p>
+                                                        <p className="text-muted" style={{ fontSize: '0.875rem' }}>
+                                                            Destination: {order.stop}
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-end">
+                                                        <h5 className="mb-0">₹{order.total}</h5>
+                                                        <p className="text-muted" style={{ fontSize: '0.875rem' }}>
+                                                            {order.Orderitems.length} items
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="d-flex gap-2">
-                                                <Button
-                                                    variant="primary"
-                                                    onClick={() => handleAcceptOrder(order.id)}
-                                                    className="flex-grow-1 d-flex align-items-center"
-                                                >
-                                                    <Plus size={16} className="me-2" />
-                                                    Accept Order
-                                                </Button>
-                                                <Button variant="outline-primary" className="d-flex align-items-center">
-                                                    <MapPin size={16} className="me-2" />
-                                                    View Location
-                                                </Button>
-                                            </div>
+                                                <div className="mb-3">
+                                                    <h6 className="fw-medium" style={{ fontSize: '0.875rem' }}>Items:</h6>
+                                                    <div className="d-grid gap-1">
+                                                        {order.Orderitems.map((item, index) => (
+                                                            <div key={index} className="order-item">
+                                                                <span>{item.name} × {item.quantity}</span>
+                                                                <span>₹{item.price * item.quantity}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <div className="d-flex gap-2">
+                                                    <Button
+                                                        variant="primary"
+                                                        onClick={() => handleAcceptOrder(order._id)}
+                                                        className="flex-grow-1 d-flex align-items-center"
+                                                    >
+                                                        <Plus size={16} className="me-2" />
+                                                        Accept Order
+                                                    </Button>
+                                                    <Button variant="outline-primary" className="d-flex align-items-center">
+                                                        <MapPin size={16} className="me-2" />
+                                                        View Location
+                                                    </Button>
+                                                </div>
+                                            </Card.Body>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <Card className="no-deliveries">
+                                        <Card.Body>
+                                            <Truck size={64} className="no-deliveries-icon" />
+                                            <h3 className="mb-2" style={{ fontSize: '1.25rem', fontWeight: '600' }}>
+                                                No Available Orders
+                                            </h3>
+                                            <p className="text-muted">
+                                                All orders are currently assigned or being prepared
+                                            </p>
                                         </Card.Body>
                                     </Card>
-                                ))
+                                )
                             ) : (
                                 <Card className="no-deliveries">
                                     <Card.Body>
                                         <Truck size={64} className="no-deliveries-icon" />
                                         <h3 className="mb-2" style={{ fontSize: '1.25rem', fontWeight: '600' }}>
-                                            No Available Orders
+                                            You are Offline
                                         </h3>
                                         <p className="text-muted">
-                                            All orders are currently assigned or being prepared
+                                            Go online to view and accept available orders.
                                         </p>
                                     </Card.Body>
                                 </Card>

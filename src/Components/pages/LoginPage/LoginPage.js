@@ -15,6 +15,7 @@ const SignupPage = () => {
     const [selectedRole, setSelectedRole] = useState(null);
     const [authMode, setAuthMode] = useState('login');
     const [formData, setFormData] = useState({});
+
     const navigate = useNavigate();
 
     const roleConfig = {
@@ -145,14 +146,14 @@ const SignupPage = () => {
                 navigate('/');
             }
             else if (role === 'restaurant') {
-                navigate('/restaurant-dashboard');
+                // navigate('/restaurant-dashboard');
                 navigate('/restaurant-dashboard', { state: { role, response } });
             }
             else if (role === 'admin') {
                 navigate('/admin-dashboard');
             }
             else if (role === 'delivery') {
-                navigate('/delivery-dashboard');
+                navigate('/delivery-dashboard', { state: { role, response } });
             }
         }
 
