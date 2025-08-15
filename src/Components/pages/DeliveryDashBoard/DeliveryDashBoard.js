@@ -24,13 +24,6 @@ import {
     Plus
 } from "lucide-react";
 import Header from "../../layout/Header/Header";
-import {
-    getAvailableOrders,
-    getAgentOrders,
-    assignOrderToAgent,
-    updateOrderStatus,
-    subscribeToOrderUpdates
-} from "../../lib/orderManger";
 import "./DeliveryDashBoard.css";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -41,29 +34,17 @@ const DeliveryDashBoard = () => {
     const [availableOrders, setAvailableOrders] = useState([]);
     const [assignedOrders, setAssignedOrders] = useState([]);
     const [currentDelivery, setCurrentDelivery] = useState(null);
+    const [deliveryHistory, setDeliveryHistory] = useState([]);
     const { role, response } = location.state || {}// Mocked for this example  
     console.log("role", role);
     console.log("response", response);
     const agentId = response.agent._id || "agent_001"; // Use agent ID from response
 
 
-    const [deliveryHistory] = useState([
-        { id: 'DEL001', customer: 'Raj Patel', amount: 500, time: '2:30 PM', rating: 5 },
-        { id: 'DEL002', customer: 'Anita Singh', amount: 350, time: '1:45 PM', rating: 4 },
-        { id: 'DEL003', customer: 'Amit Kumar', amount: 280, time: '12:30 PM', rating: 5 }
-    ]);
+
 
     useEffect(() => {
         fetchOrders();
-
-        const subscription = subscribeToOrderUpdates((payload) => {
-            console.log('Order update received:', payload);
-            fetchOrders();
-        });
-
-        return () => {
-            subscription.unsubscribe();
-        };
     }, []);
     const getReadyToPickupOrders = async (stop, city) => {
         try {
@@ -77,11 +58,12 @@ const DeliveryDashBoard = () => {
             throw error;
         }
     };
-    const updateAgentAvailavelity = async (agentId, availavelity) => {
+    const updateAgentAvailabelity = async (agentId, availabelity
+    ) => {
         try {
             const response = await axios.patch(
-                `http://localhost:4000/api/agent/availavelity/${agentId}`,
-                { availavelity },
+                `http://localhost:4000/api/agent/availabelity/${agentId}`,
+                { availabelity },
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -89,9 +71,38 @@ const DeliveryDashBoard = () => {
                     }
                 }
             );
+            console.log('Agent availability updated:', response.data.data);
             return response.data;
         } catch (error) {
-            console.error('Error updating agent availavelity:', error.response?.data || error.message);
+            console.error('Error updating agent availabelity:', error.response?.data || error.message);
+            throw error;
+        }
+    };
+    const updateOrderStatus = async (orderId, status) => {
+        try {
+            const payload = { status }; // send as object
+            const response = await axios.patch(
+                `http://localhost:4000/api/order/update-status/${orderId}`,
+                payload,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            console.log('Order status updated:', response);
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
+    }
+    const getCompletedDeliveriesByAgentId = async (agentId) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:4000/api/agent/completed-deliveries/${agentId}`
+            );
+            return response.data.data;
+        } catch (error) {
+            console.error('Error fetching completed deliveries:', error);
             throw error;
         }
     };
@@ -136,13 +147,15 @@ const DeliveryDashBoard = () => {
 
     const fetchOrders = async () => {
         try {
-            const [available, assigned] = await Promise.all([
+            const [available, assigned, orderHistory] = await Promise.all([
                 getReadyToPickupOrders(response.agent.zone.stop, response.agent.zone.city),
-                getAgentOrdersById(agentId)
+                getAgentOrdersById(agentId),
+                getCompletedDeliveriesByAgentId(agentId)
             ]);
 
             setAvailableOrders(available);
             setAssignedOrders(assigned);
+            setDeliveryHistory(orderHistory);
 
             const activeDelivery = assigned.find(order =>
                 ['assigned', 'picked_up', 'in-transit'].includes(order.deliveryStatus)
@@ -152,6 +165,7 @@ const DeliveryDashBoard = () => {
             console.error('Error fetching orders:', error);
         }
     };
+
 
     const handleAcceptOrder = async (orderId) => {
         try {
@@ -164,7 +178,7 @@ const DeliveryDashBoard = () => {
 
     const handleChangingOnlineStatus = async (agentId, status) => {
         try {
-            await updateAgentAvailavelity(agentId, status);
+            await updateAgentAvailabelity(agentId, status);
             fetchOrders();
             setIsOnline(status);
         } catch (error) {
@@ -187,20 +201,20 @@ const DeliveryDashBoard = () => {
 
     const getStatusBadgeVariant = (status) => {
         switch (status) {
-            case 'assigned': return 'primary';
-            case 'picked-up': return 'warning';
-            case 'in-transit': return 'info';
-            case 'delivered': return 'success';
+            case 'Assigned': return 'primary';
+            case 'Picked-up': return 'warning';
+            case 'In-transit': return 'info';
+            case 'Delivered': return 'success';
             default: return 'secondary';
         }
     };
 
     const getStatusText = (status) => {
         switch (status) {
-            case 'assigned': return 'Go to Restaurant';
-            case 'picked-up': return 'Navigate to Bus Stop';
-            case 'in-transit': return 'In Transit';
-            case 'delivered': return 'Delivered';
+            case 'Assigned': return 'Go to Restaurant';
+            case 'Picked-up': return 'Navigate to Bus Stop';
+            case 'In-transit': return 'In Transit';
+            case 'Delivered': return 'Delivered';
             default: return status;
         }
     };
@@ -209,22 +223,22 @@ const DeliveryDashBoard = () => {
         if (!currentDelivery) return null;
 
         switch (currentDelivery.status) {
-            case 'assigned':
+            case 'Assigned':
                 return {
                     text: 'Reached Restaurant',
-                    action: () => handleUpdateDeliveryStatus(currentDelivery.id, 'picked-up'),
+                    action: () => handleUpdateDeliveryStatus(currentDelivery._id, 'Picked-up'),
                     variant: 'primary'
                 };
-            case 'picked-up':
+            case 'Picked-up':
                 return {
                     text: 'Start Delivery',
-                    action: () => handleUpdateDeliveryStatus(currentDelivery.id, 'in-transit'),
+                    action: () => handleUpdateDeliveryStatus(currentDelivery._id, 'In-transit'),
                     variant: 'warning'
                 };
-            case 'in-transit':
+            case 'In-transit':
                 return {
                     text: 'Complete Delivery',
-                    action: () => handleUpdateDeliveryStatus(currentDelivery.id, 'delivered'),
+                    action: () => handleUpdateDeliveryStatus(currentDelivery._id, 'Delivered'),
                     variant: 'success'
                 };
             default:
@@ -239,6 +253,8 @@ const DeliveryDashBoard = () => {
         { label: 'On Time %', value: '95%', icon: Clock, color: 'text-info' }
     ];
     console.log("assignedOrders", assignedOrders);
+    console.log("availableOrders", availableOrders);
+    console.log("deliveryHistory", deliveryHistory);
 
     return (
         <div className="delivery-dashboard">
@@ -305,7 +321,7 @@ const DeliveryDashBoard = () => {
                 {/* Main Content */}
                 <Tabs defaultActiveKey="current" id="delivery-tabs" className="mb-3">
                     <Tab eventKey="current" title="Current Delivery">
-                        {currentDelivery && currentDelivery.status !== 'delivered' ? (
+                        {currentDelivery && currentDelivery.status !== 'Delivered' ? (
                             <Card className="mb-4 p-3">
                                 <Card.Body>
                                     <div className="d-flex justify-content-between align-items-center mb-4">
@@ -324,15 +340,15 @@ const DeliveryDashBoard = () => {
                                                 <div className="d-grid gap-2">
                                                     <div className="d-flex justify-content-between">
                                                         <span>Order ID:</span>
-                                                        <span className="fw-medium">{currentDelivery.id}</span>
+                                                        <span className="fw-medium">{currentDelivery._id}</span>
                                                     </div>
                                                     <div className="d-flex justify-content-between">
                                                         <span>Restaurant:</span>
-                                                        <span className="fw-medium">Restaurant {currentDelivery.restaurant_id}</span>
+                                                        <span className="fw-medium">{currentDelivery.restaurantId.name}</span>
                                                     </div>
                                                     <div className="d-flex justify-content-between">
                                                         <span>Amount:</span>
-                                                        <span className="fw-medium">₹{currentDelivery.total}</span>
+                                                        <span className="fw-medium">₹{currentDelivery.totalAmount}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -340,7 +356,7 @@ const DeliveryDashBoard = () => {
                                             <div className="mb-4">
                                                 <h3 className="mb-2" style={{ fontWeight: '500' }}>Items</h3>
                                                 <div className="d-grid gap-1">
-                                                    {currentDelivery.items.map((item, index) => (
+                                                    {currentDelivery.Orderitems.map((item, index) => (
                                                         <div key={index} className="order-item">
                                                             <span>{item.name}</span>
                                                             <span>× {item.quantity}</span>
@@ -368,19 +384,20 @@ const DeliveryDashBoard = () => {
                                                 <div className="d-grid gap-2">
                                                     <div className="d-flex justify-content-between">
                                                         <span>Name:</span>
-                                                        <span className="fw-medium">{currentDelivery.customer}</span>
+                                                        <span className="fw-medium">{currentDelivery.customerDetails.name
+                                                        }</span>
                                                     </div>
                                                     <div className="d-flex justify-content-between">
                                                         <span>Phone:</span>
-                                                        <span className="fw-medium">{currentDelivery.phone}</span>
+                                                        <span className="fw-medium">{currentDelivery.customerDetails.phone}</span>
                                                     </div>
                                                     <div className="d-flex justify-content-between">
                                                         <span>PNR:</span>
-                                                        <span className="fw-medium">{currentDelivery.pnr}</span>
+                                                        <span className="fw-medium">{currentDelivery.PNR}</span>
                                                     </div>
                                                     <div className="d-flex justify-content-between">
                                                         <span>Seat:</span>
-                                                        <span className="fw-medium">{currentDelivery.seat}</span>
+                                                        <span className="fw-medium">{currentDelivery.customerDetails.seatNo}</span>
                                                     </div>
                                                     <div className="d-flex justify-content-between">
                                                         <span>Route:</span>
@@ -394,9 +411,10 @@ const DeliveryDashBoard = () => {
                                                 <div className="delivery-location">
                                                     <MapPin size={16} className="text-primary mt-1" />
                                                     <div>
-                                                        <p className="fw-medium mb-0">{currentDelivery.stop_name}</p>
+                                                        <p className="fw-medium mb-0">{currentDelivery.restaurantId.location.stop}</p>
+                                                        <p className="fw-medium mb-0">{currentDelivery.restaurantId.location.city}</p>
                                                         <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Delivery Point</p>
-                                                        <p className="text-muted" style={{ fontSize: '0.875rem' }}>ETA: {currentDelivery.delivery_time}</p>
+                                                        {/* <p className="text-muted" style={{ fontSize: '0.875rem' }}>ETA: {currentDelivery.delivery_time}</p> */}
                                                     </div>
                                                 </div>
                                             </div>
@@ -404,31 +422,27 @@ const DeliveryDashBoard = () => {
                                     </Row>
 
                                     <div className="action-buttons">
-                                        <Button variant="primary" className="d-flex align-items-center">
-                                            <Navigation size={16} className="me-2" />
-                                            Navigate
-                                        </Button>
-
+                                        {/* Remove the always-rendered "Picked up" button */}
+                                        {/* Only render getNextAction() button if available */}
+                                        {getNextAction() && (
+                                            <Button
+                                                variant={getNextAction().variant}
+                                                onClick={getNextAction().action} // This calls handleUpdateDeliveryStatus with correct status
+                                                className="d-flex align-items-center"
+                                            >
+                                                <CheckCircle size={16} className="me-2" />
+                                                {getNextAction().text}
+                                            </Button>
+                                        )}
                                         <Button variant="outline-primary" className="d-flex align-items-center">
                                             <Phone size={16} className="me-2" />
                                             Call Customer
                                         </Button>
 
-                                        {currentDelivery.status === 'in-transit' && (
+                                        {currentDelivery.status === 'In-transit' && (
                                             <Button variant="outline-secondary" className="d-flex align-items-center">
                                                 <Camera size={16} className="me-2" />
                                                 Upload Proof
-                                            </Button>
-                                        )}
-
-                                        {getNextAction() && (
-                                            <Button
-                                                variant={getNextAction().variant}
-                                                onClick={getNextAction().action}
-                                                className="d-flex align-items-center"
-                                            >
-                                                <CheckCircle size={16} className="me-2" />
-                                                {getNextAction().text}
                                             </Button>
                                         )}
                                     </div>
@@ -564,16 +578,19 @@ const DeliveryDashBoard = () => {
                                                         <CheckCircle size={20} className="text-success" />
                                                     </div>
                                                     <div>
-                                                        <p className="fw-medium mb-0">{delivery.customer}</p>
+                                                        <p className="fw-medium mb-0">{delivery.customerDetails.name}</p>
                                                         <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>
-                                                            Delivered at {delivery.time}
+                                                            Delivered Location: {delivery.stop || 'N/A'}, {delivery.city || 'N/A'}
+                                                        </p>
+                                                        <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>
+                                                            Delivered at {delivery.deliveryTime || 'N/A'}
                                                         </p>
                                                     </div>
                                                 </div>
 
                                                 <div className="d-flex align-items-center gap-3">
                                                     <div className="text-end">
-                                                        <p className="fw-bold mb-0">₹{delivery.amount}</p>
+                                                        <p className="fw-bold mb-0">₹{delivery.totalAmount}</p>
                                                         <div className="star-rating">
                                                             {[...Array(5)].map((_, i) => (
                                                                 <Star

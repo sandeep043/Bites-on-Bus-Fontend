@@ -4,7 +4,6 @@ import { MapPin, Clock, Star, Plus, Minus, ShoppingCart, Phone, User, CreditCard
 import Header from '../../layout/Header/Header';
 import Footer from '../../layout/Footer/Footer';
 import { useSelector } from "react-redux";
-import { loadStripe } from '@stripe/stripe-js';
 import { Card, Button, Badge, Form, Container, Row, Col, ProgressBar } from 'react-bootstrap';
 import axios from 'axios';
 import './OrderFlow.css';
@@ -32,7 +31,6 @@ const OrderFlow = () => {
     console.log("PNR Details:", PNRresponse);
 
     // Initialize Stripe
-    const stripePromise = loadStripe('pk_test_51Rue31Eun4RG358LOwTZOGlJgJlQkrlayjQUXRrmWo9x408RSyn0pNX440UF3rICCZOD3Zc0xsJLaD4YF8Y8lv9Z00CX0ptN3L');
 
 
     const busStops = PNRresponse.stops || [{}];
