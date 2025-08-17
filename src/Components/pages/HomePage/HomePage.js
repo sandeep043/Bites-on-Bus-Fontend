@@ -80,46 +80,25 @@ const HomePage = () => {
                         </div>
 
                         <h1 className="hero-title">
-                            Fresh Food
-                            <span className="hero-subtitle">On Your Journey</span>
+                            <span className="hero-title-main">Fresh Food</span>
+                            <span className="hero-title-accent">On Your Journey</span>
                         </h1>
 
                         <p className="hero-description">
-                            Get delicious meals delivered right to your bus seat. Enter your PNR and discover amazing restaurants at your next stop.
+                            Experience culinary excellence during your travels. Get restaurant-quality meals delivered directly to your bus seat with real-time tracking and premium service.
                         </p>
 
-                        {/* PNR Input */}
-                        <Card className="pnr-card">
-                            <Card.Body>
-                                <div className="pnr-content">
-                                    <div className="text-center">
-                                        <h3 className="pnr-title">Start Your Order</h3>
-                                        <p className="pnr-subtitle">Enter your bus ticket PNR</p>
-                                    </div>
-
-                                    <div className="pnr-form">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Enter 10-digit PNR (e.g., 1234567890)"
-                                            value={pnr}
-                                            onChange={(e) => setPnr(e.target.value.toUpperCase())}
-                                            className="pnr-input"
-                                            maxLength={10}
-                                        />
-
-                                        <Button
-                                            onClick={handlePnrSubmit}
-                                            disabled={pnr.length < 8}
-                                            className="pnr-button"
-                                        >
-                                            Find Restaurants
-                                        </Button>
-                                    </div>
+                        <div className="hero-actions">
+                            <button className="btn home-order-pnr-button" onClick={() => navigate('/order')}>
+                                <span>Order Now</span>
+                                <div className="btn-shine"></div>
+                            </button>
+                            <button className="btn btn-secondary btn-hero">
+                                <span>Learn More</span>
+                            </button>
+                        </div>
 
 
-                                </div>
-                            </Card.Body>
-                        </Card>
                     </div>
                 </div>
             </section>

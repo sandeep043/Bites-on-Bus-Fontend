@@ -33,7 +33,6 @@ import Header from "../../layout/Header/Header";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-import { updateOrderStatus, getRestaurantOrders, subscribeToOrderUpdates } from "../../lib/orderManger";
 
 const RestaurantDashBoard = () => {
     const location = useLocation();

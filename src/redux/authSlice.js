@@ -11,11 +11,14 @@ const authSlice = createSlice({
     reducers: {
         setIsAuthenticated: (state, action) => {
             state.isAuthenticated = action.payload;
+        } ,
+        setTokent: (state, action) => {
+            state.token = action.payload;
         }
     }
 });
 
-export const { setIsAuthenticated } = authSlice.actions;
+export const { setIsAuthenticated,setTokent  } = authSlice.actions;
 
 
 export default authSlice.reducer;

@@ -47,20 +47,20 @@ const Header = () => {
 
                     {/* Auth Buttons */}
                     <div className="auth-buttons">
-                        <Button
+                        <button
                             onClick={() => navigate('/login')}
-                            className="signup-button"
+                            className="btn header-signup-button"
 
                         >
                             <User className="button-icon" />
                             Login
-                        </Button>
-                        <Button
+                        </button>
+                        <button
                             onClick={() => navigate('/signup')}
-                            className="signup-button"
+                            className="btn header-signup-button"
                         >
                             Sign Up
-                        </Button>
+                        </button>
                     </div>
 
                     {/* Mobile menu button */}
@@ -89,7 +89,7 @@ const Header = () => {
                                 About
                             </button>
                             <button
-                                onClick={() => { navigate('/track-order'); setIsMenuOpen(false); }}
+                                onClick={() => { navigate('/order'); setIsMenuOpen(false); }}
                                 className="mobile-nav-button"
                             >
                                 Track Order
@@ -98,13 +98,13 @@ const Header = () => {
                                 <Button
 
                                     onClick={() => { navigate('/login'); setIsMenuOpen(false); }}
-                                    className="btn mobile-login-button"
+                                    className="btn  header-mobile-login-button"
                                 >
                                     Login
                                 </Button>
                                 <Button
                                     onClick={() => { navigate('/signup'); setIsMenuOpen(false); }}
-                                    className="btn mobile-signup-button"
+                                    className="btn header-mobile-signup-button"
                                 >
                                     Sign Up
                                 </Button>

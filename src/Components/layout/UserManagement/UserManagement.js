@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
 import { Search, Filter, UserCheck, UserX, MoreVertical, Mail, Phone } from 'lucide-react';
+import { useEffect } from 'react';
+import axios from 'axios';
+// import { API_URL, token } from '../../../config';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import './UserManagement.css';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import './UserManagement.css';
 
 const UserManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRole, setFilterRole] = useState('all');
+    const token = localStorage.getItem('token');
 
     const users = [
         {
@@ -83,6 +92,23 @@ const UserManagement = () => {
             default: return 'gray';
         }
     };
+
+    useEffect(() => {
+        async function fetchUsers() {
+            try {
+                const response = await axios.get('http://localhost:4000/api/user/getall', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                console.log(response.data);
+            } catch (err) {
+                console.error('Error fetching users:', err);
+                toast.error('Failed to fetch users. Please try again later.');
+            }
+        }
+        fetchUsers();
+    }, [token]);
 
     return (
         <div className="user-management">

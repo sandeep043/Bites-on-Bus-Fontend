@@ -26,11 +26,10 @@ const Footer = () => {
 
                     {/* Quick Links */}
                     <div className="footer-section">
-                        <h3 className="section-title">Quick Links</h3>
+                        <h3 className="footer-section-title">Quick Links</h3>
                         <ul className="section-list">
                             <li><a href="/" className="section-link">Home</a></li>
                             <li><a href="/about" className="section-link">About Us</a></li>
-                            <li><a href="/restaurants" className="section-link">Restaurants</a></li>
                             <li><a href="/track-order" className="section-link">Track Order</a></li>
                             <li><a href="/help" className="section-link">Help & Support</a></li>
                         </ul>
@@ -38,7 +37,7 @@ const Footer = () => {
 
                     {/* For Business */}
                     <div className="footer-section">
-                        <h3 className="section-title">For Business</h3>
+                        <h3 className="footer-section-title">For Business</h3>
                         <ul className="section-list">
                             <li><a href="/restaurant-partner" className="section-link">Partner with Us</a></li>
                             <li><a href="/delivery-agent" className="section-link">Become Delivery Agent</a></li>
@@ -49,7 +48,7 @@ const Footer = () => {
 
                     {/* Contact */}
                     <div className="footer-section">
-                        <h3 className="section-title">Contact Us</h3>
+                        <h3 className="footer-section-title">Contact Us</h3>
                         <div className="contact-info">
                             <div className="contact-item">
                                 <Phone className="contact-icon" />
@@ -73,7 +72,7 @@ const Footer = () => {
 
                 <div className="footer-bottom">
                     <p className="copyright-text">
-                        © 2024 BusEats. All rights reserved. | Privacy Policy | Terms of Service
+                        © 2024 BusEats. All rights reserved. | <a href="/privacy" className="footer-legal-link">Privacy Policy</a> | <a href="/terms" className="footer-legal-link">Terms of Service</a>
                     </p>
                 </div>
             </div>

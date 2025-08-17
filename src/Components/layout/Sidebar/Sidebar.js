@@ -15,7 +15,7 @@ const Sidebar = ({ activeView, setActiveView }) => {
             <div className="sidebar-header">
                 <div className="logo">
                     <BarChart3 size={32} />
-                    <h2>FoodAdmin</h2>
+                    <h2>Admin</h2>
                 </div>
             </div>
 

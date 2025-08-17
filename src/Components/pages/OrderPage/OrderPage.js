@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bus, Search, MapPin } from 'lucide-react';
+import { Bus, Search, MapPin, Clock, Shield, Utensils } from 'lucide-react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../layout/Header/Header';
@@ -13,26 +13,16 @@ const OrderPage = () => {
     const [pnr, setPnr] = useState('');
     const [pnrDetails, setPnrDetails] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    //    navigate('/paymentPage', { state: { adults, flightDetails, airLineDetails } });
-    //const { adults, flightDetails, airLineDetails } = location.state || {};
 
     const onPNRSubmit = async (pnr) => {
         try {
             const response = await axios.get(`http://localhost:4000/api/pnr/${pnr}`);
-
             return response.data;
-
-
         } catch (error) {
             console.error("Error fetching PNR data:", error);
-            alert("Failed to fetch PNR data. Please try again later.");
+            toast.error("Failed to fetch PNR data. Please try again later.");
             setIsLoading(false);
-
         }
-
-
-
-
     }
 
     const handleSubmit = async (e) => {
@@ -40,18 +30,13 @@ const OrderPage = () => {
         if (pnr.length > 5) {
             setIsLoading(true);
             setTimeout(async () => {
-
                 const PNRresponse = await onPNRSubmit(pnr);
                 setIsLoading(false);
                 if (PNRresponse) {
                     setPnrDetails(PNRresponse);
-                    console.log("PNR Details:", pnrDetails);
                     toast.success("PNR details fetched successfully!");
-                    // navigate('/paymentPage', { state: { adults, flightDetails, airLineDetails
                     navigate('/orderflow', { state: { pnr, PNRresponse } });
-
                 }
-
             }, 1500);
         }
     };
@@ -59,53 +44,53 @@ const OrderPage = () => {
     return (
         <>
             <Header />
-            <div className="pnr-entry-container">
-                <div className="pnr-content">
+            <div className="order-page-container">
+                <div className="order-page-content">
                     {/* Logo and Header */}
-                    <div className="logo-container">
-                        <div className="logo-icon">
-                            <Bus size={40} color="white" />
+                    <div className="order-logo-container">
+                        <div className="order-logo-icon">
+                            <Bus size={40} className="order-logo-bus" />
                         </div>
-                        <h1 className="logo-title">BusEats</h1>
-                        <p className="logo-subtitle">Fresh meals delivered to your bus stop</p>
+                        <h1 className="order-logo-title">BusEats</h1>
+                        <p className="order-logo-subtitle">Fresh meals delivered to your bus seat</p>
                     </div>
 
                     {/* PNR Input Form */}
-                    <div className="pnr-card">
-                        <div className="pnr-header">
-                            <h2 className="pnr-title">Enter Your PNR</h2>
-                            <p className="pnr-subtitle">
+                    <div className="order-pnr-card">
+                        <div className="order-pnr-header">
+                            <h2 className="order-pnr-title">Enter Your PNR</h2>
+                            <p className="order-pnr-subtitle">
                                 Enter the 10-digit PNR from your bus ticket
                             </p>
                         </div>
 
                         <Form onSubmit={handleSubmit}>
-                            <div className="pnr-input-container">
+                            <div className="order-pnr-input-container">
                                 <Form.Control
                                     type="text"
                                     placeholder="e.g., 1234567890"
                                     value={pnr}
                                     onChange={(e) => setPnr(e.target.value)}
-                                    className="pnr-input"
+                                    className="order-pnr-input"
                                     maxLength={10}
                                 />
-                                <Search size={20} className="pnr-search-icon" />
+                                <Search size={20} className="order-pnr-search-icon" />
                             </div>
 
                             <Button
                                 type="submit"
-                                variant="light"
+                                variant="primary"
                                 size="lg"
                                 disabled={!pnr || isLoading}
-                                className="pnr-button"
+                                className="order-pnr-button"
                             >
                                 {isLoading ? (
-                                    <div className="d-flex align-items-center gap-2">
-                                        <div className="spinner"></div>
-                                        <span>getting your journey...</span>
+                                    <div className="order-loading-container">
+                                        <div className="order-spinner"></div>
+                                        <span>Finding your journey...</span>
                                     </div>
                                 ) : (
-                                    <div className="d-flex align-items-center gap-2">
+                                    <div className="order-button-content">
                                         <MapPin size={20} />
                                         <span>Find My Bus</span>
                                     </div>
@@ -114,26 +99,37 @@ const OrderPage = () => {
                         </Form>
 
                         {/* Example PNR hint */}
-                        <div className="pnr-hint">
+                        <div className="order-pnr-hint">
                             <p>
-                                Don't have a PNR? Try demo: <span className="font-monospace fw-medium">1234567890</span>
+                                Don't have a PNR? Try demo: <span className="order-demo-pnr">PNR1001</span>
                             </p>
                         </div>
                     </div>
 
                     {/* Features */}
-                    <div className="features-grid">
-                        <div>
-                            <div className="feature-icon">🍽️</div>
-                            <p className="feature-text">Fresh Food</p>
+                    <div className="order-features-grid">
+                        <div className="order-feature-item">
+                            <div className="order-feature-icon">
+                                <Utensils size={24} />
+                            </div>
+                            <p className="order-feature-text">Fresh Food</p>
                         </div>
-                        <div>
-                            <div className="feature-icon">⚡</div>
-                            <p className="feature-text">Quick Delivery</p>
+                        <div className="order-feature-item">
+                            <div className="order-feature-icon">
+                                <Clock size={24} />
+                            </div>
+                            <p className="order-feature-text">Quick Delivery</p>
+                        </div>
+                        <div className="order-feature-item">
+                            <div className="order-feature-icon">
+                                <Shield size={24} />
+                            </div>
+                            <p className="order-feature-text">Safe & Hygienic</p>
                         </div>
                     </div>
                 </div>
             </div>
+            <Footer />
         </>
     );
 };
