@@ -3,16 +3,19 @@ import { Card, Badge } from 'react-bootstrap';
 import { Clock, MapPin, Hash } from 'lucide-react';
 
 const getStatusVariant = (status) => {
-    switch (status.toLowerCase()) {
-        case 'delivered':
+    switch (status) {
+        case 'Delivered':
             return 'success';
-        case 'preparing':
-        case 'confirmed':
+        case 'Preparing':
+        case 'Confirmed':
             return 'info';
-        case 'on the way':
-        case 'out for delivery':
+        case 'On the way':
+        case 'Out for delivery':
             return 'warning';
-        case 'placed':
+        case 'Placed': 
+             return 'primary';
+        case 'Cancelled':
+            return 'danger';
         default:
             return 'secondary';
     }

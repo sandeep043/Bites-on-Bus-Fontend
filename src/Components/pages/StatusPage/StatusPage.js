@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 
 const StatusPage = () => {
 
-    const { status, id, payment_id } = useParams()
+    const { status, id, payment_id,order_id } = useParams()
     const navigate = useNavigate()
 
     return (
@@ -13,9 +13,11 @@ const StatusPage = () => {
                     <h1 className='text-4xl text-center'>Status :{status}  </h1>
                     <h1 className='text-4xl text-center'>Id : {id} </h1>
                     <h1 className='text-4xl text-center'>Payment Id : {payment_id} </h1>
+                    <h1 className='text-4xl text-center'>order Id : {order_id} </h1>
                     <button onClick={() => navigate(-1)} className="px-12 py-2 bg-black text-white">Back</button>
                     <button onClick={() => navigate('/')} className="px-12 py-2 bg-black text-white">Home</button>
-                    <button onClick={() => navigate('/order-tracking')} className="px-12 py-2 bg-black text-white">Home</button>
+                    <button onClick={() => navigate('/order-tracking',{state : {order_id}})} className="px-12 py-2 bg-black text-white">track order</button>
+                     {/* navigate('/delivery-dashboard', { state: { role, response } }); */}
                 </div>
             </div>
         </>

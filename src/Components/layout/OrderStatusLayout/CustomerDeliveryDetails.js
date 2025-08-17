@@ -5,8 +5,11 @@ import { User, MapPin, Armchair, Shield, Phone } from 'lucide-react';
 const CustomerDeliveryDetails = ({
     customerDetails,
     stop,
-    isOtpVerified
-}) => {
+    isOtpVerified,
+    deliveryStatus,
+    agentDetails = {} // Default to empty object if agentDetails not provided
+}) => { 
+
     return (
         <Card className="w-100 mb-4 shadow-sm">
             <Card.Header>
@@ -45,7 +48,7 @@ const CustomerDeliveryDetails = ({
                     </div>
                 </div>
 
-                <div className="d-flex align-items-center mb-3">
+                {/* <div className="d-flex align-items-center mb-3">
                     <Shield className="me-3 text-muted" size={20} />
                     <div className="d-flex align-items-center">
                         <span className="small text-muted me-2">OTP Verification:</span>
@@ -53,12 +56,28 @@ const CustomerDeliveryDetails = ({
                             {isOtpVerified ? "✓ Verified" : "Pending"}
                         </Badge>
                     </div>
-                </div>
+                </div> */}
 
-                <div className="pt-2 border-top">
-                    <p className="small text-muted mb-0">
-                        <strong>Delivery Partner:</strong> Awaiting assignment
-                    </p>
+               <div className="pt-2 border-top">
+                    {(!agentDetails || Object.keys(agentDetails).length === 0) ? (
+                        <p className="small text-muted mb-0">
+                            <strong>Delivery Partner:</strong> Awaiting assignment
+                        </p>
+                    ) : (
+                        <div>
+                            <p className="small text-muted mb-0">
+                                <strong>Delivery Partner:</strong> {agentDetails.name || 'N/A'}
+                            </p>
+                            {agentDetails.phone && (
+                                <p className="small text-muted mb-0">
+                                    <strong>Phone:</strong> {agentDetails.phone}
+                                </p>
+                            )}
+                             <p className="small text-muted mb-0">
+                                <strong>vehicleType :</strong> {agentDetails.vehicleType || 'N/A'}
+                            </p>
+                        </div>
+                    )}
                 </div>
             </Card.Body>
         </Card>

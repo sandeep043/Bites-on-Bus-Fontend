@@ -28,7 +28,7 @@ function App() {
         <Route path='/delivery-dashboard' element={<DeliveryDashboard />} />
         <Route path='/orderflow' element={<OrderFlow />} />
         <Route path='/orderpreview' element={<OrderPreview />} />
-        <Route path='/payment/:status/:id/:payment_id' element={<StatusPage />} />
+        <Route path='/payment/:status/:id/:payment_id/:order_id' element={<StatusPage />} />
         <Route path='/order-tracking' element={<OrderTrackingPage />} />
 
       </Routes>

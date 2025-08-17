@@ -148,7 +148,7 @@ const RestaurantDashBoard = () => {
                 ['Placed', 'Preparing', 'Ready', 'Assigned', 'Ready to pickup', 'Picked-up', 'In-transit'].includes(order.status)
             );
             const completed = orders.filter(order =>
-                order.status === 'completed' || order.status === 'delivered'
+                order.status === 'Completed' || order.status === 'Delivered'
             );
             setActiveOrders(active);
             setCompletedOrders(completed);
@@ -248,18 +248,18 @@ const RestaurantDashBoard = () => {
     };
     const getStatusBadgeVariant = (status) => {
         switch (status) {
-            case 'preparing': return 'warning';
-            case 'ready': return 'success';
-            case 'picked-up': return 'primary';
+            case 'Placed': return 'warning';
+            case 'Ready': return 'success';
+            case 'Picked-up': return 'primary';
             default: return 'secondary';
         }
     };
 
     const getStatusIcon = (status) => {
         switch (status) {
-            case 'preparing': return <Clock size={16} />;
-            case 'ready': return <CheckCircle size={16} />;
-            case 'picked-up': return <AlertCircle size={16} />;
+            case 'Placed': return <Clock size={16} />;
+            case 'Ready': return <CheckCircle size={16} />;
+            case 'Picked-up': return <AlertCircle size={16} />;
             default: return <XCircle size={16} />;
         }
     };
@@ -271,6 +271,7 @@ const RestaurantDashBoard = () => {
         { label: 'Prep Time', value: '15 min', icon: Clock, color: 'text-info' }
     ];
 
+    console.log('Active Orders:', activeOrders);
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
             <Header />
@@ -330,7 +331,7 @@ const RestaurantDashBoard = () => {
                                         {activeOrders.filter(o => o.status === 'Preparing').length} Preparing
                                     </Badge>
                                     <Badge bg="success" className="bg-opacity-10 text-success">
-                                        {activeOrders.filter(o => o.status === 'ready').length} Ready
+                                        {activeOrders.filter(o => o.status === 'Ready').length} Ready
                                     </Badge>
                                 </div>
                             </div>
@@ -342,7 +343,7 @@ const RestaurantDashBoard = () => {
                                             <div className="d-flex justify-content-between mb-3">
                                                 <div>
                                                     <div className="d-flex align-items-center gap-2 mb-2">
-                                                        <h5 className="mb-0" style={{ fontWeight: '600' }}>Order #{order.id}</h5>
+                                                        <h5 className="mb-0" style={{ fontWeight: '600' }}>Order #{order._id}</h5>
                                                         <Badge bg={getStatusBadgeVariant(order.status)} className="d-flex align-items-center gap-1">
                                                             {getStatusIcon(order.status)}
                                                             <span style={{ textTransform: 'capitalize' }}>
@@ -358,19 +359,19 @@ const RestaurantDashBoard = () => {
                                                         Phone: {order.customerDetails.phone} | Stop: {order.stop}
                                                     </p>
 
-                                                    {order.delivery_agent_id && order.agent_name && (
+                                                    {order.agentId  && (
                                                         <div className="mt-2 p-2 bg-info bg-opacity-10 rounded">
                                                             <div className="d-flex align-items-center gap-2">
                                                                 <User size={16} className="text-info" />
                                                                 <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
-                                                                    Agent: {order.agent_name}
+                                                                    Agent Name: {order.agentId.name}
                                                                 </span>
                                                             </div>
                                                             <div className="d-flex align-items-center gap-2 mt-1">
                                                                 <Phone size={16} className="text-info" />
-                                                                <span style={{ fontSize: '0.875rem' }}>{order.agent_phone}</span>
+                                                                <span style={{ fontSize: '0.875rem' }}>{order.agentId.phone}</span>
                                                                 <Truck size={16} className="text-info ms-2" />
-                                                                <span style={{ fontSize: '0.875rem' }}>{order.agent_vehicle}</span>
+                                                                <span style={{ fontSize: '0.875rem' }}>{order.agentId.vehicleType}</span>
                                                             </div>
                                                         </div>
                                                     )}
@@ -403,7 +404,7 @@ const RestaurantDashBoard = () => {
                                             </ListGroup>
 
                                             <div className="d-flex gap-2">
-                                                {order.status === 'Preparing' && (
+                                                {order.status === 'Placed' && (
                                                     <Button
                                                         variant="success"
                                                         onClick={() => handleUpdateOrderStatus(order._id, 'Ready')}
@@ -423,16 +424,16 @@ const RestaurantDashBoard = () => {
                                                         Assign a Delivery Agent
                                                     </Button>
                                                 )}
-                                                {order.status === 'In-transit' && (
+                                                {/* {order.status === 'In-transit' && (
                                                     <Button
                                                         variant="info"
-                                                        onClick={() => handleUpdateOrderStatus(order.id, 'completed')}
+                                                        onClick={() => handleUpdateOrderStatus(order._id, 'Delivered')}
                                                         className="d-flex align-items-center"
                                                     >
                                                         <CheckCircle size={16} className="me-2" />
                                                         Complete Order
                                                     </Button>
-                                                )}
+                                                )} */}
                                                 <Button variant="outline-primary">
                                                     Contact Customer
                                                 </Button>
@@ -461,7 +462,7 @@ const RestaurantDashBoard = () => {
                                     <div className="d-grid gap-3">
                                         {menuItems && menuItems.length > 0 ? (
                                             menuItems.map((item) => (
-                                                <Card key={item.id} className="p-2">
+                                                <Card key={item._id} className="p-2">
                                                     <Card.Body className="d-flex justify-content-between align-items-center p-2">
                                                         <div className="flex-grow-1">
                                                             <div className="d-flex align-items-center gap-2 mb-1">

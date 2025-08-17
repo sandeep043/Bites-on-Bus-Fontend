@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { Container, ToastContainer, Toast } from 'react-bootstrap';
 import OrderSummaryCard from "../../layout/OrderStatusLayout/OrderSummaryCard";
 import DeliveryProgressTracker from "../../layout/OrderStatusLayout/DeliveryProgressTracker";
 import CustomerDeliveryDetails from "../../layout/OrderStatusLayout/CustomerDeliveryDetails";
 import OrderItemsList from "../../layout/OrderStatusLayout/OrderItemsList";
 import ActionButtons from "../../layout/OrderStatusLayout/ActionButtons";
+import { useLocation } from 'react-router-dom'; 
+import axios from 'axios';
+import Header from '../../layout/Header/Header';
+import Footer from '../../layout/Footer/Footer';
 
 const sampleOrder = {
     "_id": "689c7eb6349646d817c5fc38",
@@ -57,8 +61,13 @@ const sampleOrder = {
 };
 
 
-const OrderTrackingPage = () => {
-    const [order] = useState(sampleOrder);
+const OrderTrackingPage = () => { 
+    const location = useLocation();
+    const { order_id } = location.state || {};
+    const [order, setOrder] = useState(sampleOrder); // Default to sample order for initial render
+
+
+    console.log("Order ID from state:", order_id);
     const [showToast, setShowToast] = useState(false);
     const [toastConfig, setToastConfig] = useState({
         title: '',
@@ -91,9 +100,42 @@ const OrderTrackingPage = () => {
             "Help & Support",
             "Connecting you to customer support..."
         );
-    };
+    }; 
 
+
+
+
+    const getOrderDetailsById = async (orderId) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:4000/api/order/details/${orderId}`
+    );
+    return response.data; // Contains status and data
+  } catch (error) {
+    // Handle error as needed
+    throw error.response ? error.response.data : error;
+  }
+};
+ 
+useEffect(() => {  
+   const fetchOrderDetails = async () => {
+  try {
+    const data = await getOrderDetailsById(order_id); 
+    console.log("Fetched order details:", data.data);
+    setOrder(data.data); 
+  } catch (err) {
+    console.error(err);
+  }
+}
+   fetchOrderDetails(); 
+    
+
+}, [order_id]); 
+
+console.log("Order details:", order);
     return (
+        <> 
+        <Header/>
         <div className="min-vh-100 bg-light">
             <Container className="py-4" style={{ maxWidth: '900px' }}>
                 {/* Toast Notification */}
@@ -143,6 +185,8 @@ const OrderTrackingPage = () => {
                 {/* Customer & Delivery Details */}
                 <CustomerDeliveryDetails
                     customerDetails={order.customerDetails}
+                    deliveryStatus={order.deliveryStatus} 
+                    agentDetails={order.agentId || {}} // if agentId is not available, it will be an empty object
                     stop={order.stop}
                     isOtpVerified={order.isOtpVerified}
                 />
@@ -165,7 +209,10 @@ const OrderTrackingPage = () => {
                     <p>Need help? Contact our 24/7 support team</p>
                 </div>
             </Container>
-        </div>
+        </div> 
+        <ToastContainer position="top-end" className="p-3" />
+        <Footer/>
+        </>
     );
 }
 

@@ -30,7 +30,7 @@ import axios from "axios";
 
 const DeliveryDashBoard = () => {
     const location = useLocation();
-    const [isOnline, setIsOnline] = useState('offline');
+    // const [isOnline, setIsOnline] = useState('');
     const [availableOrders, setAvailableOrders] = useState([]);
     const [assignedOrders, setAssignedOrders] = useState([]);
     const [currentDelivery, setCurrentDelivery] = useState(null);
@@ -38,7 +38,9 @@ const DeliveryDashBoard = () => {
     const { role, response } = location.state || {}// Mocked for this example  
     console.log("role", role);
     console.log("response", response);
-    const agentId = response.agent._id || "agent_001"; // Use agent ID from response
+    const agentId = response.agent._id || "agent_001";
+    const agentStatus = response.agent.availabelity || 'offline'; // Mocked for this example
+     const [isOnline, setIsOnline] = useState(agentStatus); // Use agent ID from response
 
 
 
@@ -158,7 +160,7 @@ const DeliveryDashBoard = () => {
             setDeliveryHistory(orderHistory);
 
             const activeDelivery = assigned.find(order =>
-                ['assigned', 'picked_up', 'in-transit'].includes(order.deliveryStatus)
+                ['assigned','Assigned', 'picked_up','Picked-up','In-transit', 'in-transit'].includes(order.deliveryStatus)
             );
             setCurrentDelivery(activeDelivery || null);
         } catch (error) {
@@ -223,7 +225,7 @@ const DeliveryDashBoard = () => {
         if (!currentDelivery) return null;
 
         switch (currentDelivery.status) {
-            case 'Assigned':
+            case 'Ready to pickup':
                 return {
                     text: 'Reached Restaurant',
                     action: () => handleUpdateDeliveryStatus(currentDelivery._id, 'Picked-up'),
@@ -481,7 +483,7 @@ const DeliveryDashBoard = () => {
                             {isOnline === 'online' ? (
                                 availableOrders.length > 0 ? (
                                     availableOrders.map((order) => (
-                                        <Card key={order.id} className="p-3">
+                                        <Card key={order._id} className="p-3">
                                             <Card.Body>
                                                 <div className="d-flex justify-content-between mb-3">
                                                     <div className="flex-grow-1">
@@ -572,7 +574,7 @@ const DeliveryDashBoard = () => {
                                 {deliveryHistory.length > 0 ? (
                                     <div className="d-grid gap-3">
                                         {deliveryHistory.map((delivery) => (
-                                            <div key={delivery.id} className="delivery-history-item">
+                                            <div key={delivery._id} className="delivery-history-item">
                                                 <div className="d-flex align-items-center gap-3">
                                                     <div className="delivery-history-icon">
                                                         <CheckCircle size={20} className="text-success" />
