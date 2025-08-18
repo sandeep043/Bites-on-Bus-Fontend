@@ -1,5 +1,5 @@
 /* Status Page Styles */
-:root {
+/* :root {
     --status-primary: #424874;
     --status-secondary: #A6B1E1;
     --status-light: #DCD6F7;
@@ -9,7 +9,7 @@
     --status-success: #10B981;
     --status-error: #EF4444;
     --status-warning: #F59E0B;
-}
+} */
 
 .status-container {
     min-height: 100vh;

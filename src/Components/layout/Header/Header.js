@@ -53,6 +53,12 @@ const Header = () => {
                         >
                             Food Order
                         </button>
+                        <button
+                            onClick={() => navigate('/myorders')}
+                            className="nav-button"
+                        >
+                            my orders
+                        </button>
                     </nav>
 
                     {isAuthenticated ? (
@@ -122,6 +128,12 @@ const Header = () => {
                                 className="mobile-nav-button"
                             >
                                 Track Order
+                            </button>
+                            <button
+                                onClick={() => { navigate('/myorders'); setIsMenuOpen(false); }}
+                                className="mobile-nav-button"
+                            >
+                                my orders
                             </button>
                             {isAuthenticated ? (
                                 <div className="mobile-auth-buttons">

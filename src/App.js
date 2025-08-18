@@ -18,6 +18,7 @@ import {
   DeliveryProtectedRoute,
   RestaurantProtectedRoute
 } from '../src/Route/ProtectedRoute';
+import MyOrdersPage from './Components/pages/MyOrdersPage/MyOrdersPage';
 
 function App() {
   return (
@@ -61,6 +62,11 @@ function App() {
         <Route path='/order-tracking' element={
           <UseProtectedRoute>
             <OrderTrackingPage />
+          </UseProtectedRoute>
+        } />
+        <Route path='/myorders' element={
+          <UseProtectedRoute>
+            <MyOrdersPage />
           </UseProtectedRoute>
         } />
       </Routes>

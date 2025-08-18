@@ -1,0 +1,155 @@
+.orders-container {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.orders-content {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.orders-header {
+    margin-bottom: 2rem;
+}
+
+.orders-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.orders-subtitle {
+    color: #6c757d;
+}
+
+.order-card {
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.order-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.order-header {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.order-body {
+    padding: 1rem;
+}
+
+.order-restaurant {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.order-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(13, 110, 253, 0.1);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-restaurant-name {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-bottom: 0.25rem;
+}
+
+.order-restaurant-cuisine {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.order-details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .order-details {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.order-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.order-divider {
+    color: #6c757d;
+}
+
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.order-items-count {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.order-total {
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.loading-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.loading-icon {
+    width: 3rem;
+    height: 3rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.no-orders {
+    text-align: center;
+    padding: 3rem;
+}
+
+.no-orders-icon {
+    width: 4rem;
+    height: 4rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}

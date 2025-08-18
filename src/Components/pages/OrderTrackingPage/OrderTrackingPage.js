@@ -5,7 +5,7 @@ import DeliveryProgressTracker from "../../layout/OrderStatusLayout/DeliveryProg
 import CustomerDeliveryDetails from "../../layout/OrderStatusLayout/CustomerDeliveryDetails";
 import OrderItemsList from "../../layout/OrderStatusLayout/OrderItemsList";
 import ActionButtons from "../../layout/OrderStatusLayout/ActionButtons";
-import { useLocation } from 'react-router-dom'; 
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../../layout/Header/Header';
 import Footer from '../../layout/Footer/Footer';
@@ -61,7 +61,7 @@ const sampleOrder = {
 };
 
 
-const OrderTrackingPage = () => { 
+const OrderTrackingPage = () => {
     const location = useLocation();
     const { order_id } = location.state || {};
     const [order, setOrder] = useState(sampleOrder); // Default to sample order for initial render
@@ -100,118 +100,118 @@ const OrderTrackingPage = () => {
             "Help & Support",
             "Connecting you to customer support..."
         );
-    }; 
+    };
 
 
 
 
     const getOrderDetailsById = async (orderId) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:4000/api/order/details/${orderId}`
-    );
-    return response.data; // Contains status and data
-  } catch (error) {
-    // Handle error as needed
-    throw error.response ? error.response.data : error;
-  }
-};
- 
-useEffect(() => {  
-   const fetchOrderDetails = async () => {
-  try {
-    const data = await getOrderDetailsById(order_id); 
-    console.log("Fetched order details:", data.data);
-    setOrder(data.data); 
-  } catch (err) {
-    console.error(err);
-  }
-}
-   fetchOrderDetails(); 
-    
+        try {
+            const response = await axios.get(
+                `http://localhost:4000/api/order/details/${orderId}`
+            );
+            return response.data; // Contains status and data
+        } catch (error) {
+            // Handle error as needed
+            throw error.response ? error.response.data : error;
+        }
+    };
 
-}, [order_id]); 
+    useEffect(() => {
+        const fetchOrderDetails = async () => {
+            try {
+                const data = await getOrderDetailsById(order_id);
+                console.log("Fetched order details:", data.data);
+                setOrder(data.data);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        fetchOrderDetails();
 
-console.log("Order details:", order);
+
+    }, [order_id]);
+
+    console.log("Order details:", order);
     return (
-        <> 
-        <Header/>
-        <div className="min-vh-100 bg-light">
-            <Container className="py-4" style={{ maxWidth: '900px' }}>
-                {/* Toast Notification */}
-                <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
-                    <Toast
-                        show={showToast}
-                        onClose={() => setShowToast(false)}
-                        delay={3000}
-                        autohide
-                        bg={toastConfig.variant}
-                    >
-                        <Toast.Header>
-                            <strong className="me-auto">{toastConfig.title}</strong>
-                        </Toast.Header>
-                        <Toast.Body className="text-white">
-                            {toastConfig.message}
-                        </Toast.Body>
-                    </Toast>
-                </div>
+        <>
+            <Header />
+            <div className="min-vh-100 bg-light">
+                <Container className="py-4" style={{ maxWidth: '900px' }}>
+                    {/* Toast Notification */}
+                    <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
+                        <Toast
+                            show={showToast}
+                            onClose={() => setShowToast(false)}
+                            delay={3000}
+                            autohide
+                            bg={toastConfig.variant}
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto">{toastConfig.title}</strong>
+                            </Toast.Header>
+                            <Toast.Body className="text-white">
+                                {toastConfig.message}
+                            </Toast.Body>
+                        </Toast>
+                    </div>
 
-                {/* Header */}
-                <div className="text-center py-4">
-                    <h1 className="mb-3">Track Your Order</h1>
-                    <p className="text-muted">Real-time updates on your food delivery</p>
-                </div>
+                    {/* Header */}
+                    <div className="text-center py-4">
+                        <h1 className="mb-3">Track Your Order</h1>
+                        <p className="text-muted">Real-time updates on your food delivery</p>
+                    </div>
 
-                {/* Order Summary */}
-                <OrderSummaryCard
-                    order={{
-                        PNR: order.PNR,
-                        city: order.city,
-                        orderTimeandDate: order.orderTimeandDate,
-                        totalAmount: order.totalAmount,
-                        status: order.status,
-                        stop: order.stop
-                    }}
-                />
+                    {/* Order Summary */}
+                    <OrderSummaryCard
+                        order={{
+                            PNR: order.PNR,
+                            city: order.city,
+                            orderTimeandDate: order.orderTimeandDate,
+                            totalAmount: order.totalAmount,
+                            status: order.status,
+                            stop: order.stop
+                        }}
+                    />
 
-                {/* Delivery Progress */}
-                <div className="bg-white rounded p-4 shadow-sm mb-4">
-                    <DeliveryProgressTracker
-                        status={order.status}
+                    {/* Delivery Progress */}
+                    <div className="bg-white rounded p-4 shadow-sm mb-4">
+                        <DeliveryProgressTracker
+                            status={order.status}
+                            deliveryStatus={order.deliveryStatus}
+                        />
+                    </div>
+
+                    {/* Customer & Delivery Details */}
+                    <CustomerDeliveryDetails
+                        customerDetails={order.customerDetails}
                         deliveryStatus={order.deliveryStatus}
+                        agentDetails={order.agentId || {}} // if agentId is not available, it will be an empty object
+                        stop={order.stop}
+                        isOtpVerified={order.isOtpVerified}
                     />
-                </div>
 
-                {/* Customer & Delivery Details */}
-                <CustomerDeliveryDetails
-                    customerDetails={order.customerDetails}
-                    deliveryStatus={order.deliveryStatus} 
-                    agentDetails={order.agentId || {}} // if agentId is not available, it will be an empty object
-                    stop={order.stop}
-                    isOtpVerified={order.isOtpVerified}
-                />
+                    {/* Order Items */}
+                    <OrderItemsList items={order.Orderitems} />
 
-                {/* Order Items */}
-                <OrderItemsList items={order.Orderitems} />
+                    {/* Action Buttons */}
+                    <div className="bg-white rounded p-4 shadow-sm mb-4">
+                        <ActionButtons
+                            status={order.status}
+                            onContactRestaurant={handleContactRestaurant}
+                            onCancelOrder={handleCancelOrder}
+                            onGetHelp={handleGetHelp}
+                        />
+                    </div>
 
-                {/* Action Buttons */}
-                <div className="bg-white rounded p-4 shadow-sm mb-4">
-                    <ActionButtons
-                        status={order.status}
-                        onContactRestaurant={handleContactRestaurant}
-                        onCancelOrder={handleCancelOrder}
-                        onGetHelp={handleGetHelp}
-                    />
-                </div>
-
-                {/* Footer */}
-                <div className="text-center py-4 small text-muted">
-                    <p>Need help? Contact our 24/7 support team</p>
-                </div>
-            </Container>
-        </div> 
-        <ToastContainer position="top-end" className="p-3" />
-        <Footer/>
+                    {/* Footer */}
+                    <div className="text-center py-4 small text-muted">
+                        <p>Need help? Contact our 24/7 support team</p>
+                    </div>
+                </Container>
+            </div>
+            <ToastContainer position="top-end" className="p-3" />
+            <Footer />
         </>
     );
 }
