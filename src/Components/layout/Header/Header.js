@@ -9,6 +9,16 @@ import "./Header.css";
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    const handleLogout = () => {
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('isTravelerAuthenticated');
+        localStorage.removeItem('isAdminAuthenticated');
+        localStorage.removeItem('isDeliveryAuthenticated');
+        localStorage.removeItem('isRestaurantAuthenticated');
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
 
     return (
         <header className="header">
@@ -45,23 +55,42 @@ const Header = () => {
                         </button>
                     </nav>
 
-                    {/* Auth Buttons */}
-                    <div className="auth-buttons">
-                        <button
-                            onClick={() => navigate('/login')}
-                            className="btn header-signup-button"
+                    {isAuthenticated ? (
+                        <div className="user-menu">
 
-                        >
-                            <User className="button-icon" />
-                            Login
-                        </button>
-                        <button
-                            onClick={() => navigate('/signup')}
-                            className="btn header-signup-button"
-                        >
-                            Sign Up
-                        </button>
-                    </div>
+                            <Button
+                                variant="danger"
+
+                                className="user-logout-button"
+                                onClick={handleLogout}
+                            >
+                                <User className="button-icon" />
+                                Logout
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="auth-buttons">
+                            <Button
+                                variant="secondary"
+                                className="header-signup-button"
+                                onClick={() => navigate('/login')}
+                            >
+                                <User className="button-icon" />
+                                Login
+                            </Button>
+                            <Button
+
+                                variant="secondary"
+                                className="header-signup-button"
+                                onClick={() => navigate('/signup')}
+                            >
+                                Register
+                            </Button>
+                        </div>
+                    )}
+
+
+
 
                     {/* Mobile menu button */}
                     <button
@@ -94,21 +123,34 @@ const Header = () => {
                             >
                                 Track Order
                             </button>
-                            <div className="mobile-auth-buttons">
-                                <Button
-
-                                    onClick={() => { navigate('/login'); setIsMenuOpen(false); }}
-                                    className="btn  header-mobile-login-button"
-                                >
-                                    Login
-                                </Button>
-                                <Button
-                                    onClick={() => { navigate('/signup'); setIsMenuOpen(false); }}
-                                    className="btn header-mobile-signup-button"
-                                >
-                                    Sign Up
-                                </Button>
-                            </div>
+                            {isAuthenticated ? (
+                                <div className="mobile-auth-buttons">
+                                    <Button
+                                        variant="danger"
+                                        onClick={() => { handleLogout(); setIsMenuOpen(false); }}
+                                        className="btn header-mobile-logout-button"
+                                    >
+                                        Logout
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="mobile-auth-buttons">
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => { navigate('/login'); setIsMenuOpen(false); }}
+                                        className="btn header-mobile-login-button"
+                                    >
+                                        Login
+                                    </Button>
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => { navigate('/signup'); setIsMenuOpen(false); }}
+                                        className="btn header-mobile-signup-button"
+                                    >
+                                        Register
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

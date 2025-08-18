@@ -3,7 +3,7 @@ import { Truck, User, Phone, Mail, MapPin, Car, Bike, AlertCircle } from 'lucide
 import axios from 'axios';
 import './DeliveryAgentRegistration.css';
 
-const DeliveryAgentRegistration = () => {
+const DeliveryAgentRegistration = (token) => {
     const [activeTab, setActiveTab] = useState('register');
     const [agentForm, setAgentForm] = useState({
         name: '',
@@ -17,6 +17,7 @@ const DeliveryAgentRegistration = () => {
         city: '',
 
     });
+    console.log('token in deliveryAgentRegistration', token);
 
     const handleChange = (e) => {
         setAgentForm({ ...agentForm, [e.target.name]: e.target.value });

@@ -44,14 +44,27 @@ const RestaurantDashBoard = () => {
     const { role, response } = location.state || {}// Mocked for this example 
     const [menuItems, setMenuItems] = useState([]);
 
-    // console.log('Role:', role);
-    // console.log('Response:', response);
+    const restaurantLocalStorage = localStorage.getItem('restaurantData')
+        ? JSON.parse(localStorage.getItem('restaurantData'))
+        : null;
 
+    console.log('restaurantLocalStorage', restaurantLocalStorage);
+
+    const token = restaurantLocalStorage?.token; // Get the token from localStorage 
+    console.log('token', token);
 
     const fetchRestaurantData = async () => {
         try {
-            console.log("Fetching restaurant data for ID:", response.owner.ownedRestaurant);
-            const Responsedata = await axios.get(`http://localhost:4000/api/restaurant/${response.owner.ownedRestaurant}`);
+            const id = response.owner.ownedRestaurant;
+            const Responsedata = await axios.get(
+                `http://localhost:4000/api/restaurant/${id}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}` // if using JWT auth
+                    }
+                }
+            );
             if (Responsedata) {
                 setRestaurantData(Responsedata.data.restaurant);
             }
@@ -77,7 +90,8 @@ const RestaurantDashBoard = () => {
                 menuItem, // payload
                 {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}` // if using JWT auth
                     }
                 }
             );
@@ -105,12 +119,7 @@ const RestaurantDashBoard = () => {
             const payload = { status }; // send as object
             const response = await axios.patch(
                 `http://localhost:4000/api/order/update-status/${orderId}`,
-                payload,
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
+                payload
             );
             console.log('Order status updated:', response);
         } catch (error) {
@@ -141,6 +150,7 @@ const RestaurantDashBoard = () => {
 
     const fetchOrders = async () => {
         try {
+            console.log('dumi', restaurantData);
             const orders = await getActiveOrdersByRestaurant(restaurantData._id);
             console.log('Fetched orders:', orders);
             const active = orders.filter(order =>
@@ -161,7 +171,12 @@ const RestaurantDashBoard = () => {
         try {
             const response = await axios.delete(
                 `http://localhost:4000/api/restaurant/${restaurantId}/menu/${menuItemId}`
-            );
+                , {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}` // if using JWT auth
+                    }
+                });
             console.log('Menu item deleted:', response.data);
             return response.data;
         } catch (error) {
@@ -358,7 +373,7 @@ const RestaurantDashBoard = () => {
                                                         Phone: {order.customerDetails.phone} | Stop: {order.stop}
                                                     </p>
 
-                                                    {order.agentId  && (
+                                                    {order.agentId && (
                                                         <div className="mt-2 p-2 bg-info bg-opacity-10 rounded">
                                                             <div className="d-flex align-items-center gap-2">
                                                                 <User size={16} className="text-info" />

@@ -104,11 +104,40 @@ const LoginPage = () => {
         try {
             const response = await postUser(formData, selectedRole);
             if (response) {
-                localStorage.setItem(`${selectedRole}Data`, JSON.stringify(response.data));
+
+
+
+                localStorage.setItem(`${selectedRole}Data`, JSON.stringify(response));// Store user data in localStorage 'travelerData', restaurantData', 'adminData', 'deliveryData'
+                localStorage.setItem('isAuthenticated', true);
                 // dispatch(setIsAuthenticated(true));
                 // dispatch(setToken(response.token));
 
                 toast.success(`Login successful as ${selectedRole}`);
+                if (selectedRole === 'restaurant') {
+                    localStorage.setItem('isRestaurantAuthenticated', JSON.stringify({
+                        role: `${selectedRole}Data`,
+                        isAuthenticated: true
+                    }));
+                }
+                else if (selectedRole === 'admin') {
+                    localStorage.setItem('isAdminAuthenticated', JSON.stringify({
+                        role: `${selectedRole}Data`,
+                        isAuthenticated: true
+                    }));
+
+                }
+                else if (selectedRole === 'delivery') {
+                    localStorage.setItem('isDeliveryAuthenticated', JSON.stringify({
+                        role: `${selectedRole}Data`,
+                        isAuthenticated: true
+                    }));
+                }
+                else if (selectedRole === 'traveler') {
+                    localStorage.setItem('isTravelerAuthenticated', JSON.stringify({
+                        role: `${selectedRole}Data`,
+                        isAuthenticated: true
+                    }));
+                }
 
                 const redirectPaths = {
                     'traveler': '/',

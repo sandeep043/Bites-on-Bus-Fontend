@@ -5,23 +5,45 @@ import RestaurantRegistration from '../../layout/RestaurantRegistration/Restaura
 import DeliveryAgentRegistration from '../../layout/DeliveryAgentRegistration/DeliveryAgentRegistration';
 import './AdminDashBoard.css';
 import UserManagement from '../../layout/UserManagement/UserManagement';
+import { useLocation } from 'react-router-dom';
 
 const AdminDashboard = () => {
+    const location = useLocation();
     const [activeView, setActiveView] = useState('overview');
 
-    const AdminData = localStorage.getItem('adminData');
-    console.log(AdminData);
+    const { role, response } = location.state || {}// Mocked for this example  
+    console.log("role", role);
+    console.log("response", response);
+
+    //  const restaurantLocalStorage = localStorage.getItem('restaurantData')
+    //     ? JSON.parse(localStorage.getItem('restaurantData'))
+    //     : null;
+
+    // console.log('restaurantLocalStorage', restaurantLocalStorage);
+
+    // const token = restaurantLocalStorage?.token; // Get the token from localStorage 
+    // console.log('token', token); 
+
+
+    const adminLocalStorage = localStorage.getItem('adminData')
+        ? JSON.parse(localStorage.getItem('adminData'))
+        : null;
+    console.log('adminLocalStorage', adminLocalStorage);
+    const token = adminLocalStorage?.token; // Get the token from localStorage
+    console.log('token', token);
+
+
 
     const renderActiveView = () => {
         switch (activeView) {
             case 'overview':
                 return <Overview />;
             case 'users':
-                return <UserManagement />;
+                return <UserManagement token={token} />;
             case 'restaurants':
-                return <RestaurantRegistration />;
+                return <RestaurantRegistration token={token} />;
             case 'delivery':
-                return <DeliveryAgentRegistration />;
+                return <DeliveryAgentRegistration token={token} />;
             default:
                 return <Overview />;
         }

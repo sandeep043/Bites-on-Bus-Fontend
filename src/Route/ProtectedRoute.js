@@ -1,15 +1,34 @@
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { navigationLinks } from "../utils/constants";
+import React from "react";
 
-function ProtectedRoute({ children }) {
-    const { isAuthenticated } = useSelector((state) => state.auth.isAuthenticated);
-
-    return isAuthenticated ? (
-        children
-    ) : (
-        <Navigate to={navigationLinks.login.path} replace />
-    );
+function UseProtectedRoute({ children }) {
+    const authObj = JSON.parse(localStorage.getItem('isTravelerAuthenticated') || '{}');
+    const isAuthenticated = authObj.isAuthenticated;
+    return isAuthenticated ? children : <Navigate to='/login' replace />;
 }
 
-export default ProtectedRoute;
+function AdminProtectedRoute({ children }) {
+    const authObj = JSON.parse(localStorage.getItem('isAdminAuthenticated') || '{}');
+    const isAuthenticated = authObj.isAuthenticated;
+    return isAuthenticated ? children : <Navigate to='/login' replace />;
+}
+
+function DeliveryProtectedRoute({ children }) {
+    const authObj = JSON.parse(localStorage.getItem('isDeliveryAuthenticated') || '{}');
+    const isAuthenticated = authObj.isAuthenticated;
+    return isAuthenticated ? children : <Navigate to='/login' replace />;
+}
+
+function RestaurantProtectedRoute({ children }) {
+    const authObj = JSON.parse(localStorage.getItem('isRestaurantAuthenticated') || '{}');
+    const isAuthenticated = authObj.isAuthenticated;
+    return isAuthenticated ? children : <Navigate to='/login' replace />;
+}
+
+export {
+    UseProtectedRoute,
+    AdminProtectedRoute,
+    DeliveryProtectedRoute,
+    RestaurantProtectedRoute
+};

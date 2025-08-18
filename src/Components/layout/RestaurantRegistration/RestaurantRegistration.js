@@ -24,6 +24,9 @@ const RestaurantRegistration = () => {
         open: '',
         close: '',
     });
+    const token = JSON.parse(localStorage.getItem('adminData'))?.token;
+    console.log('token in restaurantRegistration', token);
+
 
     const handleOwnerChange = (e) => {
         setOwnerForm({ ...ownerForm, [e.target.name]: e.target.value });
@@ -92,7 +95,8 @@ const RestaurantRegistration = () => {
                 payload,
                 {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
                     }
                 }
             );
@@ -137,7 +141,12 @@ const RestaurantRegistration = () => {
 
     const getAllrestaurantsRegistered = async () => {
         try {
-            const response = await axios.get("http://localhost:4000/api/admin/restaurants");
+            const response = await axios.get("http://localhost:4000/api/admin/restaurants", {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            });
             console.log(response.data);
             return response.data;
 

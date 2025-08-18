@@ -1,83 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, UserCheck, UserX, MoreVertical, Mail, Phone } from 'lucide-react';
-import { useEffect } from 'react';
 import axios from 'axios';
-// import { API_URL, token } from '../../../config';
-import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import './UserManagement.css';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import './UserManagement.css';
 
 const UserManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRole, setFilterRole] = useState('all');
-    const token = localStorage.getItem('token');
+    const [users, setUsers] = useState([]);
 
-    const users = [
-        {
-            id: 1,
-            name: 'John Doe',
-            email: 'john.doe@email.com',
-            phone: '+1234567890',
-            role: 'customer',
-            status: 'active',
-            joinDate: '2024-01-15',
-            orders: 23
-        },
-        {
-            id: 2,
-            name: 'Sarah Wilson',
-            email: 'sarah.wilson@email.com',
-            phone: '+1234567891',
-            role: 'restaurant_owner',
-            status: 'active',
-            joinDate: '2024-01-10',
-            restaurant: 'Pizza Palace'
-        },
-        {
-            id: 3,
-            name: 'Mike Johnson',
-            email: 'mike.johnson@email.com',
-            phone: '+1234567892',
-            role: 'delivery_agent',
-            status: 'active',
-            joinDate: '2024-01-20',
-            vehicle: 'Motorcycle'
-        },
-        {
-            id: 4,
-            name: 'Emily Davis',
-            email: 'emily.davis@email.com',
-            phone: '+1234567893',
-            role: 'customer',
-            status: 'inactive',
-            joinDate: '2024-01-05',
-            orders: 8
-        },
-        {
-            id: 5,
-            name: 'Robert Brown',
-            email: 'robert.brown@email.com',
-            phone: '+1234567894',
-            role: 'restaurant_owner',
-            status: 'pending',
-            joinDate: '2024-01-25',
-            restaurant: 'Burger House'
-        }
-    ];
+    // Get token from localStorage
+    const token = JSON.parse(localStorage.getItem('adminData'))?.token;
+    console.log('token in userManagement', token);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/user/getall', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                console.log('users', response.data.users);
+                setUsers(response.data.users || []);
+            } catch (err) {
+                toast.error('Failed to fetch users. Please try again later.');
+                console.error('Error fetching users:', err);
+            }
+        };
+        fetchUsers();
+    }, [token]);
 
     const filteredUsers = users.filter(user => {
-        const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = filterRole === 'all' || user.role === filterRole;
         return matchesSearch && matchesFilter;
     });
 
     const getRoleColor = (role) => {
         switch (role) {
-            case 'customer': return 'blue';
+            case 'user': return 'blue';
             case 'restaurant_owner': return 'green';
             case 'delivery_agent': return 'purple';
             default: return 'gray';
@@ -92,23 +55,6 @@ const UserManagement = () => {
             default: return 'gray';
         }
     };
-
-    useEffect(() => {
-        async function fetchUsers() {
-            try {
-                const response = await axios.get('http://localhost:4000/api/user/getall', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                console.log(response.data);
-            } catch (err) {
-                console.error('Error fetching users:', err);
-                toast.error('Failed to fetch users. Please try again later.');
-            }
-        }
-        fetchUsers();
-    }, [token]);
 
     return (
         <div className="user-management">
@@ -150,22 +96,22 @@ const UserManagement = () => {
                             <th>Contact</th>
                             <th>Role</th>
                             <th>Status</th>
-                            <th>Details</th>
+
                             <th>Join Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredUsers.map(user => (
-                            <tr key={user.id}>
+                            <tr key={user._id}>
                                 <td>
                                     <div className="user-info">
                                         <div className="user-avatar">
-                                            {user.name.charAt(0).toUpperCase()}
+                                            {user.name?.charAt(0).toUpperCase()}
                                         </div>
                                         <div>
                                             <div className="user-name">{user.name}</div>
-                                            <div className="user-id">ID: {user.id}</div>
+                                            <div className="user-id">ID: {user._id}</div>
                                         </div>
                                     </div>
                                 </td>
@@ -183,22 +129,15 @@ const UserManagement = () => {
                                 </td>
                                 <td>
                                     <span className={`role-badge ${getRoleColor(user.role)}`}>
-                                        {user.role.replace('_', ' ').toUpperCase()}
+                                        {user.role?.replace('_', ' ').toUpperCase()}
                                     </span>
                                 </td>
                                 <td>
-                                    <span className={`status-badge ${getStatusColor(user.status)}`}>
-                                        {user.status.toUpperCase()}
+                                    <span className={`status-badge ${getStatusColor(user.status || 'active')}`}>
+                                        {(user.status || 'active').toUpperCase()}
                                     </span>
                                 </td>
-                                <td>
-                                    <div className="user-details">
-                                        {user.orders && <span>Orders: {user.orders}</span>}
-                                        {user.restaurant && <span>Restaurant: {user.restaurant}</span>}
-                                        {user.vehicle && <span>Vehicle: {user.vehicle}</span>}
-                                    </div>
-                                </td>
-                                <td>{new Date(user.joinDate).toLocaleDateString()}</td>
+                                <td>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''}</td>
                                 <td>
                                     <div className="action-buttons">
                                         <button className="action-btn approve" title="Approve">

@@ -13,6 +13,11 @@ import OrderFlow from './Components/pages/OrderFlow/OrderFlow';
 import OrderPreview from './Components/pages/OrderPreview/OrderPreview';
 import StatusPage from './Components/pages/StatusPage/StatusPage';
 import OrderTrackingPage from './Components/pages/OrderTrackingPage/OrderTrackingPage';
+import {
+  UseProtectedRoute, AdminProtectedRoute,
+  DeliveryProtectedRoute,
+  RestaurantProtectedRoute
+} from '../src/Route/ProtectedRoute';
 
 function App() {
   return (
@@ -23,14 +28,41 @@ function App() {
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signup' element={<SignupPage />} />
         <Route path='/order' element={<OrderPage />} />
-        <Route path='/admin-dashboard' element={<AdminDashboard />} />
-        <Route path='/restaurant-dashboard' element={<RestaurantDashBoard />} />
-        <Route path='/delivery-dashboard' element={<DeliveryDashboard />} />
-        <Route path='/orderflow' element={<OrderFlow />} />
-        <Route path='/orderpreview' element={<OrderPreview />} />
-        <Route path='/payment/:status/:id/:payment_id/:order_id' element={<StatusPage />} />
-        <Route path='/order-tracking' element={<OrderTrackingPage />} />
-
+        <Route path='/admin-dashboard' element={
+          <AdminProtectedRoute>
+            <AdminDashboard />
+          </AdminProtectedRoute>
+        } />
+        <Route path='/restaurant-dashboard' element={
+          <RestaurantProtectedRoute>
+            <RestaurantDashBoard />
+          </RestaurantProtectedRoute>
+        } />
+        <Route path='/delivery-dashboard' element={
+          <DeliveryProtectedRoute>
+            <DeliveryDashboard />
+          </DeliveryProtectedRoute>
+        } />
+        <Route path='/orderflow' element={
+          <UseProtectedRoute>
+            <OrderFlow />
+          </UseProtectedRoute>
+        } />
+        <Route path='/orderpreview' element={
+          <UseProtectedRoute>
+            <OrderPreview />
+          </UseProtectedRoute>
+        } />
+        <Route path='/payment/:status/:id/:payment_id/:order_id' element={
+          <UseProtectedRoute>
+            <StatusPage />
+          </UseProtectedRoute>
+        } />
+        <Route path='/order-tracking' element={
+          <UseProtectedRoute>
+            <OrderTrackingPage />
+          </UseProtectedRoute>
+        } />
       </Routes>
     </Router>
   );
