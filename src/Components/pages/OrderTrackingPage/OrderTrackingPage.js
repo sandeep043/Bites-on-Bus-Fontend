@@ -1,5 +1,5 @@
-import React, { use, useEffect, useState } from 'react';
-import { Container, ToastContainer, Toast } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Container, Toast } from 'react-bootstrap';
 import OrderSummaryCard from "../../layout/OrderStatusLayout/OrderSummaryCard";
 import DeliveryProgressTracker from "../../layout/OrderStatusLayout/DeliveryProgressTracker";
 import CustomerDeliveryDetails from "../../layout/OrderStatusLayout/CustomerDeliveryDetails";
@@ -9,6 +9,8 @@ import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../../layout/Header/Header';
 import Footer from '../../layout/Footer/Footer';
+import { Truck, Clock, MapPin, User, Phone } from 'lucide-react';
+import './OrderTrackingPage.css';
 
 const sampleOrder = {
     "_id": "689c7eb6349646d817c5fc38",
@@ -60,20 +62,19 @@ const sampleOrder = {
     "createdAt": "2025-08-13T12:01:58.912Z"
 };
 
-
 const OrderTrackingPage = () => {
     const location = useLocation();
     const { order_id } = location.state || {};
-    const [order, setOrder] = useState(sampleOrder); // Default to sample order for initial render
-
-
-    console.log("Order ID from state:", order_id);
+    const [order, setOrder] = useState(sampleOrder);
     const [showToast, setShowToast] = useState(false);
     const [toastConfig, setToastConfig] = useState({
         title: '',
         message: '',
         variant: 'success'
     });
+    const [isLoading, setIsLoading] = useState(true);
+
+    console.log("Order ID from state:", order_id);
 
     const showNotification = (title, message, variant = 'success') => {
         setToastConfig({ title, message, variant });
@@ -83,7 +84,8 @@ const OrderTrackingPage = () => {
     const handleContactRestaurant = () => {
         showNotification(
             "Contacting Restaurant",
-            "Opening phone dialer..."
+            "Opening phone dialer...",
+            'info'
         );
     };
 
@@ -91,28 +93,25 @@ const OrderTrackingPage = () => {
         showNotification(
             "Cancel Order",
             "Are you sure you want to cancel this order?",
-            'danger'
+            'warning'
         );
     };
 
     const handleGetHelp = () => {
         showNotification(
             "Help & Support",
-            "Connecting you to customer support..."
+            "Connecting you to customer support...",
+            'info'
         );
     };
-
-
-
 
     const getOrderDetailsById = async (orderId) => {
         try {
             const response = await axios.get(
                 `http://localhost:4000/api/order/details/${orderId}`
             );
-            return response.data; // Contains status and data
+            return response.data;
         } catch (error) {
-            // Handle error as needed
             throw error.response ? error.response.data : error;
         }
     };
@@ -120,46 +119,70 @@ const OrderTrackingPage = () => {
     useEffect(() => {
         const fetchOrderDetails = async () => {
             try {
+                setIsLoading(true);
                 const data = await getOrderDetailsById(order_id);
                 console.log("Fetched order details:", data.data);
                 setOrder(data.data);
             } catch (err) {
                 console.error(err);
+                showNotification(
+                    "Error",
+                    "Failed to load order details. Please try again.",
+                    'danger'
+                );
+            } finally {
+                setIsLoading(false);
             }
         }
-        fetchOrderDetails();
 
-
+        if (order_id) {
+            fetchOrderDetails();
+        }
     }, [order_id]);
 
-    console.log("Order details:", order);
+    if (isLoading) {
+        return (
+            <>
+                <Header />
+                <div className="order-tracking-loading">
+                    <div className="loading-spinner"></div>
+                    <p>Loading your order details...</p>
+                </div>
+                <Footer />
+            </>
+        );
+    }
+
     return (
         <>
             <Header />
-            <div className="min-vh-100 bg-light">
-                <Container className="py-4" style={{ maxWidth: '900px' }}>
+            <div className="order-tracking-container">
+                <Container className="order-tracking-content">
                     {/* Toast Notification */}
-                    <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
+                    <div className="order-tracking-toast">
                         <Toast
                             show={showToast}
                             onClose={() => setShowToast(false)}
                             delay={3000}
                             autohide
-                            bg={toastConfig.variant}
+                            className={`toast-${toastConfig.variant}`}
                         >
-                            <Toast.Header>
+                            <Toast.Header className="toast-header">
                                 <strong className="me-auto">{toastConfig.title}</strong>
                             </Toast.Header>
-                            <Toast.Body className="text-white">
+                            <Toast.Body className="toast-body">
                                 {toastConfig.message}
                             </Toast.Body>
                         </Toast>
                     </div>
 
                     {/* Header */}
-                    <div className="text-center py-4">
-                        <h1 className="mb-3">Track Your Order</h1>
-                        <p className="text-muted">Real-time updates on your food delivery</p>
+                    <div className="order-tracking-header">
+                        <div className="header-icon-container">
+                            <Truck className="header-icon" />
+                        </div>
+                        <h1 className="order-tracking-title">Track Your Order</h1>
+                        <p className="order-tracking-subtitle">Real-time updates on your food delivery</p>
                     </div>
 
                     {/* Order Summary */}
@@ -175,7 +198,11 @@ const OrderTrackingPage = () => {
                     />
 
                     {/* Delivery Progress */}
-                    <div className="bg-white rounded p-4 shadow-sm mb-4">
+                    <div className="tracking-section">
+                        <div className="section-header">
+                            <Clock className="section-icon" />
+                            <h3>Delivery Progress</h3>
+                        </div>
                         <DeliveryProgressTracker
                             status={order.status}
                             deliveryStatus={order.deliveryStatus}
@@ -183,19 +210,35 @@ const OrderTrackingPage = () => {
                     </div>
 
                     {/* Customer & Delivery Details */}
-                    <CustomerDeliveryDetails
-                        customerDetails={order.customerDetails}
-                        deliveryStatus={order.deliveryStatus}
-                        agentDetails={order.agentId || {}} // if agentId is not available, it will be an empty object
-                        stop={order.stop}
-                        isOtpVerified={order.isOtpVerified}
-                    />
+                    <div className="tracking-section">
+                        <div className="section-header">
+                            <User className="section-icon" />
+                            <h3>Delivery Details</h3>
+                        </div>
+                        <CustomerDeliveryDetails
+                            customerDetails={order.customerDetails}
+                            deliveryStatus={order.deliveryStatus}
+                            agentDetails={order.agentId || {}}
+                            stop={order.stop}
+                            isOtpVerified={order.isOtpVerified}
+                        />
+                    </div>
 
                     {/* Order Items */}
-                    <OrderItemsList items={order.Orderitems} />
+                    <div className="tracking-section">
+                        <div className="section-header">
+                            <MapPin className="section-icon" />
+                            <h3>Order Items</h3>
+                        </div>
+                        <OrderItemsList items={order.Orderitems} />
+                    </div>
 
                     {/* Action Buttons */}
-                    <div className="bg-white rounded p-4 shadow-sm mb-4">
+                    <div className="tracking-section">
+                        <div className="section-header">
+                            <Phone className="section-icon" />
+                            <h3>Quick Actions</h3>
+                        </div>
                         <ActionButtons
                             status={order.status}
                             onContactRestaurant={handleContactRestaurant}
@@ -204,17 +247,19 @@ const OrderTrackingPage = () => {
                         />
                     </div>
 
-                    {/* Footer */}
-                    <div className="text-center py-4 small text-muted">
-                        <p>Need help? Contact our 24/7 support team</p>
+                    {/* Support Footer */}
+                    <div className="support-footer">
+                        <p>Need immediate help? Contact our 24/7 support team</p>
+                        <div className="support-contact">
+                            <Phone size={16} />
+                            <span>+91 98765 43210</span>
+                        </div>
                     </div>
                 </Container>
             </div>
-            <ToastContainer position="top-end" className="p-3" />
             <Footer />
         </>
     );
 }
 
-export default OrderTrackingPage
-
+export default OrderTrackingPage;
