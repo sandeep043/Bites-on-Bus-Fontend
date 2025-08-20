@@ -35,12 +35,16 @@ const DeliveryDashBoard = () => {
     const [assignedOrders, setAssignedOrders] = useState([]);
     const [currentDelivery, setCurrentDelivery] = useState(null);
     const [deliveryHistory, setDeliveryHistory] = useState([]);
+
+    const [totalDeliveries, setTotalDeliveries] = useState(0);
+    const [totalRevenue, setTotalRevenue] = useState(0);
+
     const { role, response } = location.state || {}// Mocked for this example  
     console.log("role", role);
     console.log("response", response);
     const agentId = response.agent._id || "agent_001";
     const agentStatus = response.agent.availabelity || 'offline'; // Mocked for this example
-     const [isOnline, setIsOnline] = useState(agentStatus); // Use agent ID from response
+    const [isOnline, setIsOnline] = useState(agentStatus); // Use agent ID from response
 
 
 
@@ -158,9 +162,11 @@ const DeliveryDashBoard = () => {
             setAvailableOrders(available);
             setAssignedOrders(assigned);
             setDeliveryHistory(orderHistory);
+            setTotalDeliveries(orderHistory.length);
+            setTotalRevenue(orderHistory.reduce((sum, order) => sum + order.totalAmount * 0.2, 0).toFixed(2));
 
             const activeDelivery = assigned.find(order =>
-                ['assigned','Assigned', 'picked_up','Picked-up','In-transit', 'in-transit'].includes(order.deliveryStatus)
+                ['assigned', 'Assigned', 'picked_up', 'Picked-up', 'In-transit', 'in-transit'].includes(order.deliveryStatus)
             );
             setCurrentDelivery(activeDelivery || null);
         } catch (error) {
@@ -249,8 +255,10 @@ const DeliveryDashBoard = () => {
     };
 
     const stats = [
-        { label: 'Today\'s Deliveries', value: '12', icon: Package, color: 'text-primary' },
-        { label: 'Earnings', value: '₹850', icon: DollarSign, color: 'text-success' },
+        { label: 'TotalDeliveries', value: totalDeliveries, icon: Package, color: 'text-primary' },
+        {
+            label: 'Earnings', value: totalRevenue, icon: DollarSign, color: 'text - success'
+        },
         { label: 'Rating', value: '4.8', icon: Star, color: 'text-warning' },
         { label: 'On Time %', value: '95%', icon: Clock, color: 'text-info' }
     ];
