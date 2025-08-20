@@ -43,19 +43,22 @@ const RestaurantDashBoard = () => {
     const [restaurantActiveOrders, setRestaurantActiveOrders] = useState([]);
     const { role, response } = location.state || {}// Mocked for this example 
     const [menuItems, setMenuItems] = useState([]);
-
+    const [todayTotalOrders, setTodayTotalOrders] = useState(0);
+    const [todayRevenue, setTodayRevenue] = useState(0);
     const restaurantLocalStorage = localStorage.getItem('restaurantData')
         ? JSON.parse(localStorage.getItem('restaurantData'))
         : null;
 
     console.log('restaurantLocalStorage', restaurantLocalStorage);
 
+    const restaurantName = restaurantLocalStorage?.owner.ownedRestaurant.name || "Punjabi Dhaba - Highway Rest Point";
+
     const token = restaurantLocalStorage?.token; // Get the token from localStorage 
     console.log('token', token);
 
     const fetchRestaurantData = async () => {
         try {
-            const id = response.owner.ownedRestaurant;
+            const id = response.owner.ownedRestaurant._id;
             const Responsedata = await axios.get(
                 `http://localhost:4000/api/restaurant/${id}`,
                 {
@@ -102,6 +105,15 @@ const RestaurantDashBoard = () => {
             throw error;
         }
     };
+    const getCompletedOrdersByRestaurant = async (restaurantId) => {
+        try {
+            const response = await axios.get(`http://localhost:4000/api/order/restaurant/${restaurantId}/completed`);
+            return response.data.data;
+        } catch (error) {
+            console.error('Error fetching completed orders:', error);
+            throw error;
+        }
+    }
 
     const getActiveOrdersByRestaurant = async (restaurantId) => {
         try {
@@ -152,6 +164,7 @@ const RestaurantDashBoard = () => {
         try {
             console.log('dumi', restaurantData);
             const orders = await getActiveOrdersByRestaurant(restaurantData._id);
+            const completedOrdersdata = await getCompletedOrdersByRestaurant(restaurantData._id);
             console.log('Fetched orders:', orders);
             const active = orders.filter(order =>
                 ['Placed', 'Preparing', 'Ready', 'Assigned', 'Ready to pickup', 'Picked-up', 'In-transit'].includes(order.status)
@@ -160,7 +173,10 @@ const RestaurantDashBoard = () => {
                 order.status === 'Completed' || order.status === 'Delivered'
             );
             setActiveOrders(active);
-            setCompletedOrders(completed);
+            setCompletedOrders(completedOrdersdata);
+            setTodayRevenue(completedOrdersdata.reduce((sum, order) => sum + order.totalAmount, 0));
+            setTodayTotalOrders(completedOrdersdata.length + activeOrders.length);
+
         } catch (error) {
             console.error('Error fetching orders:', error);
         }
@@ -279,8 +295,8 @@ const RestaurantDashBoard = () => {
     };
 
     const stats = [
-        { label: 'Today\'s Orders', value: '23', icon: Bell, color: 'text-primary' },
-        { label: 'Revenue', value: '₹12,450', icon: DollarSign, color: 'text-success' },
+        { label: 'Today\'s Orders', value: todayTotalOrders, icon: Bell, color: 'text-primary' },
+        { label: 'Revenue', value: todayRevenue, icon: DollarSign, color: 'text-success' },
         { label: 'Avg Rating', value: '4.5', icon: Star, color: 'text-warning' },
         { label: 'Prep Time', value: '15 min', icon: Clock, color: 'text-info' }
     ];
@@ -297,7 +313,9 @@ const RestaurantDashBoard = () => {
                         <h1 style={{ fontSize: '1.75rem', fontWeight: '700', fontFamily: 'Poppins, sans-serif' }}>
                             Restaurant Dashboard
                         </h1>
-                        <p style={{ color: '#6c757d' }}>Punjabi Dhaba - Highway Rest Point</p>
+                        <p style={{ color: '#6c757d' }}>{restaurantName}</p>
+                        {/* cu  isine type  */}
+                        <p style={{ color: '#6c757d' }}>{restaurantLocalStorage?.owner.ownedRestaurant.cuisineType}</p>
                     </Col>
                     <Col xs="auto">
                         <div className="d-flex align-items-center gap-2">
@@ -633,7 +651,7 @@ const RestaurantDashBoard = () => {
                                                 <ListGroup.Item className="d-flex justify-content-between px-0 py-2">
                                                     <span>Total Revenue:</span>
                                                     <span className="fw-bold">
-                                                        ₹{completedOrders.reduce((sum, order) => sum + order.total, 0)}
+                                                        ₹{completedOrders.reduce((sum, order) => sum + order.totalAmount, 0)}
                                                     </span>
                                                 </ListGroup.Item>
                                             </ListGroup>
@@ -651,21 +669,27 @@ const RestaurantDashBoard = () => {
                                                 {completedOrders.length > 0 ? (
                                                     <ListGroup variant="flush">
                                                         {completedOrders.map((order) => (
-                                                            <ListGroup.Item
-                                                                key={order.id}
-                                                                className="d-flex justify-content-between align-items-center px-0 py-2 bg-success bg-opacity-10 rounded mb-1"
-                                                            >
-                                                                <div>
-                                                                    <span className="fw-bold">#{order.id}</span>
-                                                                    <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{order.customer}</p>
-                                                                </div>
-                                                                <div className="text-end">
-                                                                    <span className="fw-bold">₹{order.total}</span>
-                                                                    <p className="text-muted mb-0" style={{ fontSize: '0.75rem' }}>
-                                                                        {new Date(order.updated_at).toLocaleTimeString()}
-                                                                    </p>
-                                                                </div>
-                                                            </ListGroup.Item>
+                                                            <ListGroup variant="flush">
+                                                                {completedOrders.map((order) => (
+                                                                    <ListGroup.Item
+                                                                        key={order._id}
+                                                                        className="d-flex justify-content-between align-items-center px-0 py-2 bg-success bg-opacity-10 rounded mb-1"
+                                                                    >
+                                                                        <div>
+                                                                            <span className="fw-bold">#{order._id}</span>
+                                                                            <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{order.customerDetails.name}</p>
+                                                                        </div>
+                                                                        <div className="text-end">
+                                                                            <span className="fw-bold">₹{order.totalAmount}</span>
+                                                                            <p className="text-muted mb-0" style={{ fontSize: '0.75rem' }}>
+                                                                                {new Date(order.deliveryTime).toLocaleTimeString()}
+                                                                            </p>
+                                                                            <p className="text-muted mb-0" style={{ color: 'green' }} > {order.status}
+                                                                            </p>
+                                                                        </div>
+                                                                    </ListGroup.Item>
+                                                                ))}
+                                                            </ListGroup>
                                                         ))}
                                                     </ListGroup>
                                                 ) : (
