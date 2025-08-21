@@ -48,7 +48,7 @@ const HomePage = () => {
 
     const testimonials = [
         {
-            name: "Priya Sharma",
+            name: "Sandeep Thalari",
             route: "Delhi - Mumbai",
             rating: 5,
             comment: "Amazing service! Got fresh biryani delivered right to my seat. The tracking was so accurate!"
@@ -107,7 +107,7 @@ const HomePage = () => {
             <section className="features-section">
                 <div className="container">
                     <div className="section-header">
-                        <h2 className="section-title">Why Choose BusEats?</h2>
+                        <h2 className="section-title">Why Choose Bites on Bus?</h2>
                         <p className="section-description">
                             We make your bus journey delicious with our seamless food delivery service
                         </p>

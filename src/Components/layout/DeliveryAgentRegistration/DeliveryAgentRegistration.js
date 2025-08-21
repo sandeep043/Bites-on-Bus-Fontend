@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Truck, User, Phone, Mail, MapPin, Car, Bike, AlertCircle } from 'lucide-react';
 import axios from 'axios';
+import { useEffect } from 'react';
 import './DeliveryAgentRegistration.css';
 
-const DeliveryAgentRegistration = (token) => {
+const DeliveryAgentRegistration = () => {
     const [activeTab, setActiveTab] = useState('register');
+    const [deliveryAgents, setDeliveryAgents] = useState([]);
     const [agentForm, setAgentForm] = useState({
         name: '',
         email: '',
@@ -17,6 +19,7 @@ const DeliveryAgentRegistration = (token) => {
         city: '',
 
     });
+    const token = JSON.parse(localStorage.getItem('adminData'))?.token;
     console.log('token in deliveryAgentRegistration', token);
 
     const handleChange = (e) => {
@@ -60,57 +63,89 @@ const DeliveryAgentRegistration = (token) => {
 
 
 
+    const getDeliveryAgents = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/admin/agents/details', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+
+
+
+
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const response = await RegisterAgent(agentForm);
         console.log(response);
         alert('Delivery agent registered successfully!');
+
     };
 
-    const deliveryAgents = [
-        {
-            id: 1,
-            name: 'Mike Johnson',
-            phone: '+1234567890',
-            vehicle: 'Motorcycle',
-            zone: 'Downtown',
-            status: 'active',
-            rating: 4.8,
-            deliveries: 342,
-            earnings: '$2,840'
-        },
-        {
-            id: 2,
-            name: 'Lisa Chen',
-            phone: '+1234567891',
-            vehicle: 'Bicycle',
-            zone: 'University Area',
-            status: 'active',
-            rating: 4.9,
-            deliveries: 289,
-            earnings: '$2,156'
-        },
-        {
-            id: 3,
-            name: 'David Rodriguez',
-            phone: '+1234567892',
-            vehicle: 'Car',
-            zone: 'Suburbs',
-            status: 'pending',
-            rating: 4.7,
-            deliveries: 156,
-            earnings: '$1,432'
+    useEffect(() => {
+        const fetchRestaurants = async () => {
+            const agents = await getDeliveryAgents();
+            setDeliveryAgents(agents.data
+            );
         }
-    ];
+        fetchRestaurants();
+    }, [activeTab]);
+
+
+    // const deliveryAgents = [
+    //     {
+    //         id: 1,
+    //         name: 'Mike Johnson',
+    //         phone: '+1234567890',
+    //         vehicle: 'Motorcycle',
+    //         zone: 'Downtown',
+    //         status: 'active',
+    //         rating: 4.8,
+    //         deliveries: 342,
+    //         earnings: '$2,840'
+    //     },
+    //     {
+    //         id: 2,
+    //         name: 'Lisa Chen',
+    //         phone: '+1234567891',
+    //         vehicle: 'Bicycle',
+    //         zone: 'University Area',
+    //         status: 'active',
+    //         rating: 4.9,
+    //         deliveries: 289,
+    //         earnings: '$2,156'
+    //     },
+    //     {
+    //         id: 3,
+    //         name: 'David Rodriguez',
+    //         phone: '+1234567892',
+    //         vehicle: 'Car',
+    //         zone: 'Suburbs',
+    //         status: 'pending',
+    //         rating: 4.7,
+    //         deliveries: 156,
+    //         earnings: '$1,432'
+    //     }
+    // ];
 
     const getVehicleIcon = (vehicle) => {
-        switch (vehicle.toLowerCase()) {
-            case 'motorcycle':
+        switch (vehicle) {
+            case 'Motorcycle':
                 return Bike;
             case 'car':
                 return Car;
-            case 'bicycle':
+            case 'Scooter':
+                return Bike;
+            case 'eBike':
                 return Bike;
             default:
                 return Truck;
@@ -314,16 +349,16 @@ const DeliveryAgentRegistration = (token) => {
                         <h2>Registered Delivery Agents</h2>
                         <div className="stats">
                             <span className="stat-item">Total: {deliveryAgents.length}</span>
-                            <span className="stat-item">Active: {deliveryAgents.filter(a => a.status === 'active').length}</span>
-                            <span className="stat-item">Pending: {deliveryAgents.filter(a => a.status === 'pending').length}</span>
+                            <span className="stat-item">Active: {deliveryAgents.filter(a => a.availabelity === 'online').length}</span>
+                            <span className="stat-item">offline: {deliveryAgents.filter(a => a.availabelity === 'offline').length}</span>
                         </div>
                     </div>
 
                     <div className="agent-cards">
                         {deliveryAgents.map(agent => {
-                            const VehicleIcon = getVehicleIcon(agent.vehicle);
+                            const VehicleIcon = getVehicleIcon(agent.vehicleType);
                             return (
-                                <div key={agent.id} className="agent-card">
+                                <div key={agent._id} className="agent-card">
                                     <div className="card-header">
                                         <div className="agent-info">
                                             <div className="agent-avatar">
@@ -335,22 +370,23 @@ const DeliveryAgentRegistration = (token) => {
                                             </div>
                                         </div>
                                         <span className={`status-badge ${agent.status}`}>
-                                            {agent.status.toUpperCase()}
+                                            {agent.availabelity.toUpperCase()}
                                         </span>
                                     </div>
 
                                     <div className="card-details">
                                         <div className="detail-item">
                                             <VehicleIcon size={16} />
-                                            <span>{agent.vehicle}</span>
+                                            <span>{agent.Type}</span>
                                         </div>
                                         <div className="detail-item">
                                             <MapPin size={16} />
-                                            <span>{agent.zone}</span>
+                                            <span>{agent.zone.stop}</span>
+                                            <span>{agent.zone.city}</span>
                                         </div>
                                     </div>
 
-                                    <div className="agent-stats">
+                                    {/* <div className="agent-stats">
                                         <div className="stat">
                                             <span className="stat-value">{agent.rating}</span>
                                             <span className="stat-label">Rating</span>
@@ -363,7 +399,7 @@ const DeliveryAgentRegistration = (token) => {
                                             <span className="stat-value">{agent.earnings}</span>
                                             <span className="stat-label">Earnings</span>
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     <div className="card-actions">
                                         <button className="btn-outline">View Details</button>

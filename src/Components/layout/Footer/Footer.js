@@ -14,7 +14,7 @@ const Footer = () => {
                                 <Bus className="brand-icon" />
                             </div>
                             <div>
-                                <h1 className="brand-title">BusEats</h1>
+                                <h1 className="brand-title">Bites on Bus</h1>
                                 <p className="brand-subtitle">Fresh food on the go</p>
                             </div>
                         </div>

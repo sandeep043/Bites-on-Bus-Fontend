@@ -16,10 +16,46 @@ const localStorageMock = {
 };
 global.localStorage = localStorageMock;
 
+// Mock agent data as returned from API
+const mockAgents = [
+    {
+        _id: '1',
+        name: 'Mike Johnson',
+        phone: '+1234567890',
+        vehicleType: 'Motorcycle',
+        zone: { stop: 'Downtown', city: 'Metro City' },
+        status: 'active',
+        availabelity: 'online',
+        Type: 'Motorcycle'
+    },
+    {
+        _id: '2',
+        name: 'Lisa Chen',
+        phone: '+1234567891',
+        vehicleType: 'Bicycle',
+        zone: { stop: 'University Area', city: 'Metro City' },
+        status: 'active',
+        availabelity: 'online',
+        Type: 'Bicycle'
+    },
+    {
+        _id: '3',
+        name: 'David Rodriguez',
+        phone: '+1234567892',
+        vehicleType: 'Car',
+        zone: { stop: 'Suburbs', city: 'Metro City' },
+        status: 'pending',
+        availabelity: 'offline',
+        Type: 'Car'
+    }
+];
+
 describe('DeliveryAgentRegistration Component', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         localStorageMock.getItem.mockReturnValue(JSON.stringify({ token: 'mock-token-123' }));
+        // Mock the agent list API response
+        axios.get.mockResolvedValue({ data: { data: mockAgents } });
     });
 
     test('renders registration header and tabs', async () => {
@@ -53,9 +89,15 @@ describe('DeliveryAgentRegistration Component', () => {
         expect(screen.getByText('Lisa Chen')).toBeInTheDocument();
         expect(screen.getByText('David Rodriguez')).toBeInTheDocument();
 
-        // Use getAllByText for ambiguous status
-        expect(screen.getAllByText('ACTIVE').length).toBeGreaterThan(1);
-        expect(screen.getByText('PENDING')).toBeInTheDocument();
+        // Check status badges for availabelity
+        expect(screen.getAllByText('ONLINE').length).toBeGreaterThan(1);
+        expect(screen.getByText('OFFLINE')).toBeInTheDocument();
+
+        // Check zone info
+        expect(screen.getByText('Downtown')).toBeInTheDocument();
+        expect(screen.getByText('University Area')).toBeInTheDocument();
+        expect(screen.getByText('Suburbs')).toBeInTheDocument();
+        expect(screen.getAllByText('Metro City').length).toBeGreaterThan(1);
     });
 
     test('submits agent registration form', async () => {
@@ -79,14 +121,6 @@ describe('DeliveryAgentRegistration Component', () => {
 
         fireEvent.change(screen.getByPlaceholderText("Enter bank account number"), { target: { value: '123456789012' } });
 
-
-
-
-
-        await act(async () => {
-            await Promise.resolve();
-        });
-
-
+        
     });
 });

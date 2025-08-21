@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bus, Utensils, Truck, Settings, ArrowLeft } from 'lucide-react';
+import { Bus, Utensils, Truck, Settings, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Card, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import Header from '../../layout/Header/Header';
@@ -16,6 +16,7 @@ const LoginPage = () => {
     const [selectedRole, setSelectedRole] = useState(null);
     const [formData, setFormData] = useState({});
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
     const roleConfig = {
         traveler: {
@@ -226,7 +227,7 @@ const LoginPage = () => {
                                         />
                                     </Form.Group>
 
-                                    <Form.Group className="mb-3">
+                                    {/* <Form.Group className="mb-3">
                                         <Form.Label className="login-label">Password</Form.Label>
                                         <Form.Control
                                             name="password"
@@ -237,6 +238,30 @@ const LoginPage = () => {
                                             placeholder="Enter your password"
                                             className="login-input"
                                         />
+                                    </Form.Group> */}
+                                    <Form.Group className="mb-3" style={{ position: 'relative' }}>
+                                        <Form.Label className="login-label">Password</Form.Label>
+                                        <Form.Control
+                                            id="password"
+                                            name="password"
+                                            type={showPassword ? "text" : "password"}
+                                            value={formData.password}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter your password"
+                                            className="login-input"
+                                        />
+                                        <span
+                                            style={{
+                                                position: 'absolute',
+                                                right: '16px',
+                                                top: '38px',
+                                                cursor: 'pointer',
+                                                zIndex: 2
+                                            }}
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                        >
+                                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        </span>
                                     </Form.Group>
 
                                     <Button

@@ -44,7 +44,7 @@ const AboutPage = () => {
                         </div>
 
                         <h1 className="about-hero-title">
-                            <span className="hero-title-accent">About</span>  <span className="about-hero-title-accent">BusBites</span>
+                            <span className="hero-title-accent">About</span>  <span className="about-hero-title-accent">Bites on Bus</span>
                         </h1>
 
                         <p className="about-hero-text">
@@ -170,7 +170,7 @@ const AboutPage = () => {
                     <div className="about-team-grid">
                         {[
                             {
-                                name: "Arjun Sharma",
+                                name: "Sandeep Thalari",
                                 role: "CEO & Founder",
                                 bio: "Former tech executive with 10+ years in logistics and delivery platforms."
                             },
