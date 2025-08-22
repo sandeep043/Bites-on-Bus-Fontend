@@ -17,6 +17,7 @@ const RestaurantRegistration = () => {
 
     const [restaurantForm, setRestaurantForm] = useState({
         name: '',
+        RestaurantURL: '',
         cuisine: '',
         location: {},
         contactNumber: '',
@@ -40,33 +41,7 @@ const RestaurantRegistration = () => {
     const RegisterOwnerAndRestaurant = async (ownerData, restaurantData) => {
         try {
 
-            // {
-            //     "name": "Mahesh Kumar",
-            //         "email": "mahesh.owner@example.com",
-            //             "phone": "9876543210",
-            //                 "password": "mahesh@123",
-            //                     "govtId": "ID123456",
-            //                         "restaurant": {
-            //         "name": "Mahesh's Diner",
-            //             "cuisineType": "Indian",
-            //                 "location": "Downtown",
-            //         "contactNumber": "9876543210",
-            //             "openingHours": {
-            //             "open": "08:00",
-            //                 "close": "22:00"
-            //         },
-            //         "menu": [
-            //             {
-            //                 "itemId": "1",
-            //                 "name": "Paneer Butter Masala",
-            //                 "price": 180,
-            //                 "prepTime": 20,
-            //                 "dietaryTags": ["vegetarian"],
-            //                 "isAvailable": true
-            //             }
-            //         ]
-            //     }
-            // } 
+
             const payload = {
                 name: ownerForm.name,
                 email: ownerForm.email,
@@ -75,6 +50,7 @@ const RestaurantRegistration = () => {
                 govtId: ownerForm.govtId,
                 restaurant: {
                     name: restaurantForm.name,
+                    RestaurantURL: restaurantForm.RestaurantURL,
                     cuisineType: restaurantForm.cuisine,
                     location: {
                         stop: restaurantForm.stop,
@@ -111,6 +87,7 @@ const RestaurantRegistration = () => {
             });
             setRestaurantForm({
                 name: '',
+                RestaurantURL: '',
                 cuisine: '',
                 location: '',
                 contactNumber: '',
@@ -351,6 +328,17 @@ const RestaurantRegistration = () => {
                                             value={restaurantForm.name}
                                             onChange={handleRestaurantChange}
                                             placeholder="Enter restaurant name"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group full-width">
+                                        <label>Restaurant URL</label>
+                                        <input
+                                            type="text"
+                                            name="RestaurantURL"
+                                            value={restaurantForm.RestaurantURL}
+                                            onChange={handleRestaurantChange}
+                                            placeholder="Enter  Restaurant ImageURL"
                                             required
                                         />
                                     </div>

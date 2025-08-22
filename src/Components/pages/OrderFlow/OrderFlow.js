@@ -257,7 +257,10 @@ const OrderFlow = () => {
                                         className={`restaurant-card ${selectedRestaurant === restaurant._id ? 'selected' : ''}`}
                                         onClick={() => setSelectedRestaurant(restaurant._id)}
                                     >
-                                        <div className="restaurant-image"></div>
+                                        <div className="restaurant-image-container">  <img src={restaurant.RestaurantURL} className="rest-image" alt={restaurant.name} /></div>
+
+
+
                                         <Card.Body>
                                             <div className="restaurant-header">
                                                 <h3>{restaurant.name}</h3>
@@ -323,10 +326,13 @@ const OrderFlow = () => {
                                     <Card key={item._id} className="menu-item">
                                         <Card.Body>
                                             <div className="menu-item-content">
-                                                <div className="menu-item-image"></div>
+                                                <div className="menu-item-image">
+                                                    <img src={item.ImageURL} className="menu-item-image" alt={item.name} />
+                                                </div>
                                                 <div className="menu-item-details">
+
                                                     <h3>{item.name}</h3>
-                                                    <p>{item.prepTime}</p>
+                                                    {/* <p>{item.prepTime}</p> */}
                                                     <p className="price">₹{item.price}</p>
                                                 </div>
                                                 <Button

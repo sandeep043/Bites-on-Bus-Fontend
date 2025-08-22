@@ -236,7 +236,8 @@ const RestaurantDashBoard = () => {
                 price: '',
                 dietaryTags: [],
                 isAvailable: '',
-                prepTime: ''
+                prepTime: '',
+                ImageURL: ''
 
             });
         } catch (error) {
@@ -483,10 +484,6 @@ const RestaurantDashBoard = () => {
                                 <h2 style={{ fontSize: '1.25rem', fontWeight: '600', fontFamily: 'Poppins, sans-serif' }}>
                                     Menu Items
                                 </h2>
-                                <Button variant="primary" className="d-flex align-items-center">
-                                    <Plus size={16} className="me-2" />
-                                    Add New Item
-                                </Button>
                             </div>
 
                             <Row>
@@ -497,16 +494,24 @@ const RestaurantDashBoard = () => {
                                                 <Card key={item._id} className="p-2">
                                                     <Card.Body className="d-flex justify-content-between align-items-center p-2">
                                                         <div className="flex-grow-1">
+
                                                             <div className="d-flex align-items-center gap-2 mb-1">
-                                                                <h6 className="mb-0" style={{ fontWeight: '500' }}>{item.name}</h6>
+                                                                <div>
+                                                                    <img src={item.ImageURL} alt="menu-item" width="100" height="100" className="rounded" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-secondary fw-bold mb-0">₹{item.price}</p>
+                                                                    <h6 className="mb-0" style={{ fontWeight: '500' }}>{item.name}</h6>
+
+                                                                    <Badge bg={item.isAvailable ? 'success' : 'danger'} className="bg-opacity-20">
+                                                                        {item.isAvailable ? 'Available' : 'Out of Stock'}
+                                                                    </Badge>
+                                                                </div>
                                                                 <Badge bg="light" text="dark" className="fs-6">
                                                                     {item.category}
                                                                 </Badge>
-                                                                <Badge bg={item.isAvailable ? 'success' : 'danger'} className="bg-opacity-20">
-                                                                    {item.isAvailable ? 'Available' : 'Out of Stock'}
-                                                                </Badge>
                                                             </div>
-                                                            <p className="text-primary fw-bold mb-0">₹{item.price}</p>
+
                                                         </div>
                                                         <div className="d-flex gap-1">
                                                             <Button
@@ -603,6 +608,16 @@ const RestaurantDashBoard = () => {
                                                         placeholder="Enter item prepTime"
                                                         value={newItem.prepTime}
                                                         onChange={(e) => setNewItem(prev => ({ ...prev, prepTime: e.target.value }))}
+                                                        rows={3}
+                                                    />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>ImageURL</Form.Label>
+                                                    <FormControl
+                                                        type="text"
+                                                        placeholder="Enter item ImageURL"
+                                                        value={newItem.ImageURL}
+                                                        onChange={(e) => setNewItem(prev => ({ ...prev, ImageURL: e.target.value }))}
                                                         rows={3}
                                                     />
                                                 </Form.Group>
