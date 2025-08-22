@@ -21,7 +21,6 @@ export function OrderActions({ order, onEditOrder, onCancelOrder }) {
                     <Button
                         variant="outline-secondary"
                         onClick={onEditOrder}
-                        disabled={!canEdit}
                         className="d-flex align-items-center justify-content-start"
                     >
                         <Edit3 className="me-2" style={{ width: '16px', height: '16px' }} />

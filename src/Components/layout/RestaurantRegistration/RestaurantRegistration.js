@@ -114,7 +114,25 @@ const RestaurantRegistration = () => {
 
 
     };
-
+    const handleRestaurantDelete = async (ownerId) => {
+        try {
+            console.log('Deleting restaurant with owner ID:', ownerId);
+            const response = await axios.delete(`http://localhost:4000/api/admin/owner/${ownerId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log(response.data);
+            alert('Restaurant removed successfully!');
+            // Refresh the restaurant list after deletion
+            const updatedRestaurants = registeredRestaurants.filter(r => r.owner._id !== ownerId);
+            setRegisteredRestaurants(updatedRestaurants);
+        } catch (error) {
+            console.error('Error deleting restaurant:', error);
+            alert('Failed to remove restaurant.');
+        }
+    };
 
     const getAllrestaurantsRegistered = async () => {
         try {
@@ -489,11 +507,14 @@ const RestaurantRegistration = () => {
                                             <span>{restaurant.contactNumber} Phone</span>
                                         </div>
                                     </div>
+                                    {restaurant.owner}
                                 </div>
 
+
                                 <div className="card-actions">
-                                    <button className="btn-outline">View Details</button>
+                                    <button className="btn btn-outline">View Details</button>
                                     <button className="btn-primary">Edit</button>
+                                    <button onClick={(restaurant) => handleRestaurantDelete(restaurant.owner)} className=" btn btn-danger">Remove</button>
                                 </div>
                             </div>
                         ))}
