@@ -160,70 +160,6 @@ const RestaurantRegistration = () => {
         fetchRestaurants();
     }, [activeTab]);
 
-    // console.log(registeredRestaurants);
-    //     {
-    //   "restaurants": [
-    //     {
-    //       "_id": "689847740d9699bfbbf5a32b",
-    //       "contactNumber": "1231231230",
-    //       "cuisineType": "Italian",
-    //       "isActive": true,
-    //       "location": 
-    //         "DOWNTOWN"
-    //       ,
-    //       "menu": [],
-    //       "name": "kirak party",
-    //       "openingHours": {
-    //         "open": "10:00",
-    //         "close": "23:00"
-    //       },
-    //       "owner": {
-    //         "_id": "689847740d9699bfbbf5a328",
-    //         "email": "owner5@gmail.com",
-    //         "name": "owner 5",
-    //         "phone": "1234567890"
-    //       },
-    //       "rating": 3,
-    //       "__v": 0
-    //     }
-    //   ]
-    // }
-
-
-
-
-    // const registeredRestaurants = [
-    //     {
-    //         id: 1,
-    //         name: 'Pizza Palace',
-    //         owner: 'Sarah Wilson',
-    //         cuisine: 'Italian',
-    //         status: 'active',
-    //         rating: 4.8,
-    //         orders: 234,
-    //         revenue: '$12,450'
-    //     },
-    //     {
-    //         id: 2,
-    //         name: 'Burger House',
-    //         owner: 'Robert Brown',
-    //         cuisine: 'American',
-    //         status: 'pending',
-    //         rating: 4.6,
-    //         orders: 156,
-    //         revenue: '$8,920'
-    //     },
-    //     {
-    //         id: 3,
-    //         name: 'Sushi Station',
-    //         owner: 'David Lee',
-    //         cuisine: 'Japanese',
-    //         status: 'active',
-    //         rating: 4.9,
-    //         orders: 189,
-    //         revenue: '$15,630'
-    //     }
-    // ];
 
     return (
         <div className="restaurant-registration">
@@ -507,14 +443,14 @@ const RestaurantRegistration = () => {
                                             <span>{restaurant.contactNumber} Phone</span>
                                         </div>
                                     </div>
-                                    {restaurant.owner}
+
                                 </div>
 
 
                                 <div className="card-actions">
                                     <button className="btn btn-outline">View Details</button>
                                     <button className="btn-primary">Edit</button>
-                                    <button onClick={(restaurant) => handleRestaurantDelete(restaurant.owner)} className=" btn btn-danger">Remove</button>
+                                    <button onClick={() => handleRestaurantDelete(restaurant.owner._id)} className=" btn btn-danger">Remove</button>
                                 </div>
                             </div>
                         ))}
