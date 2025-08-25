@@ -12,60 +12,62 @@ import Footer from '../../layout/Footer/Footer';
 import { Truck, Clock, MapPin, User, Phone } from 'lucide-react';
 import './OrderTrackingPage.css';
 
-const sampleOrder = {
-    "_id": "689c7eb6349646d817c5fc38",
-    "userId": "689ad3f27ac9109206dfc07f",
-    "restaurantId": "6899f35c93d4c9555fe503e0",
-    "PNR": "6898fa79be61e37e43611f61",
-    "stop": "North Stop",
-    "city": "City B",
-    "orderTimeandDate": "2024-11-30T14:30:00.000Z",
-    "customerDetails": {
-        "name": "sandeep",
-        "phone": "111111111111111",
-        "seatNo": "asdf"
-    },
-    "Orderitems": [
-        {
-            "name": "bajji",
-            "price": 100,
-            "prepTime": 10,
-            "dietaryTags": ["snack"],
-            "isAvailable": true,
-            "_id": "689a02dc824e64a58d139a1f",
-            "quantity": 1
-        },
-        {
-            "name": "mirapkaya bajji",
-            "price": 200,
-            "prepTime": 5,
-            "dietaryTags": ["hot", "snack"],
-            "isAvailable": false,
-            "_id": "689a040d824e64a58d139a3e",
-            "quantity": 1
-        },
-        {
-            "name": "egg bajji",
-            "price": 60,
-            "prepTime": 20,
-            "dietaryTags": ["non-veg"],
-            "isAvailable": true,
-            "_id": "689acbac7ac9109206dfbe5d",
-            "quantity": 1
-        }
-    ],
-    "totalAmount": 360,
-    "status": "Placed",
-    "paymentId": "689c7eac349646d817c5fc34",
-    "isOtpVerified": false,
-    "deliveryStatus": "pending",
-    "createdAt": "2025-08-13T12:01:58.912Z"
-};
+// const sampleOrder = {
+//     "_id": "689c7eb6349646d817c5fc38",
+//     "userId": "689ad3f27ac9109206dfc07f",
+//     "restaurantId": "6899f35c93d4c9555fe503e0",
+//     "PNR": "6898fa79be61e37e43611f61",
+//     "stop": "North Stop",
+//     "city": "City B",
+//     "orderTimeandDate": "2024-11-30T14:30:00.000Z",
+//     "customerDetails": {
+//         "name": "sandeep",
+//         "phone": "111111111111111",
+//         "seatNo": "asdf"
+//     },
+//     "Orderitems": [
+//         {
+//             "name": "bajji",
+//             "price": 100,
+//             "prepTime": 10,
+//             "dietaryTags": ["snack"],
+//             "isAvailable": true,
+//             "_id": "689a02dc824e64a58d139a1f",
+//             "quantity": 1
+//         },
+//         {
+//             "name": "mirapkaya bajji",
+//             "price": 200,
+//             "prepTime": 5,
+//             "dietaryTags": ["hot", "snack"],
+//             "isAvailable": false,
+//             "_id": "689a040d824e64a58d139a3e",
+//             "quantity": 1
+//         },
+//         {
+//             "name": "egg bajji",
+//             "price": 60,
+//             "prepTime": 20,
+//             "dietaryTags": ["non-veg"],
+//             "isAvailable": true,
+//             "_id": "689acbac7ac9109206dfbe5d",
+//             "quantity": 1
+//         }
+//     ],
+//     "totalAmount": 360,
+//     "status": "Placed",
+//     "paymentId": "689c7eac349646d817c5fc34",
+//     "isOtpVerified": false,
+//     "deliveryStatus": "pending",
+//     "createdAt": "2025-08-13T12:01:58.912Z"
+// };
 
 const OrderTrackingPage = () => {
     const location = useLocation();
+
+
     const { order_id } = location.state || {};
-    const [order, setOrder] = useState(sampleOrder);
+    const [order, setOrder] = useState({});
     const [showToast, setShowToast] = useState(false);
     const [toastConfig, setToastConfig] = useState({
         title: '',
