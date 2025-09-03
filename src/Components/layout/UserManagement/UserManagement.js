@@ -4,10 +4,13 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import './UserManagement.css';
 
+
 const UserManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRole, setFilterRole] = useState('all');
     const [users, setUsers] = useState([]);
+    const url = process.env.API_URL;
+    console.log('url', url);
 
     // Get token from localStorage
     const token = JSON.parse(localStorage.getItem('adminData'))?.token;
@@ -16,7 +19,7 @@ const UserManagement = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/user/getall', {
+                const response = await axios.get(`http://localhost:4000/api/user/getall`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

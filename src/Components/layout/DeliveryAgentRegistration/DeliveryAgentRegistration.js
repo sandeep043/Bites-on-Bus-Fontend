@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Truck, User, Phone, Mail, MapPin, Car, Bike, AlertCircle } from 'lucide-react';
+import { Truck, User, Phone, Mail, MapPin, Car, Bike, AlertCircle, X } from 'lucide-react';
 import axios from 'axios';
 import { useEffect } from 'react';
 import './DeliveryAgentRegistration.css';
 
 const DeliveryAgentRegistration = () => {
     const [activeTab, setActiveTab] = useState('register');
+    const [editDeliveryAgentData, setEditDeliveryAgentData] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
     const [deliveryAgents, setDeliveryAgents] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [agentForm, setAgentForm] = useState({
         name: '',
         email: '',
@@ -78,9 +81,26 @@ const DeliveryAgentRegistration = () => {
 
 
 
+    const handleEditChange = (e) => {
+        const { name, value } = e.target;
 
+        if (name.startsWith('zone.')) {
+            const field = name.split('.')[1];
+            setEditDeliveryAgentData({
+                ...editDeliveryAgentData,
+                zone: {
+                    ...editDeliveryAgentData.zone,
+                    [field]: value
+                }
+            });
 
-
+        } else {
+            setEditDeliveryAgentData({
+                ...editDeliveryAgentData,
+                [name]: value
+            });
+        }
+    };
 
 
     const handleSubmit = async (e) => {
@@ -100,42 +120,75 @@ const DeliveryAgentRegistration = () => {
         fetchRestaurants();
     }, [activeTab]);
 
+    const handleDeliveryAgentEdit = (agent) => {
+        setEditDeliveryAgentData({
+            _id: agent._id,
+            name: agent.name,
+            phone: agent.phone || '',
+            zone: { stop: agent.zone.stop, city: agent.zone.city || '' } || { stop: '', city: '' },
+            vehicleType: agent.vehicleType || '',
+        });
+        setIsEditing(true);
+    };
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            setLoading(true);
+            const response = await axios.put(
+                `http://localhost:4000/api/agent/update/${editDeliveryAgentData._id}`,
+                editDeliveryAgentData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
-    // const deliveryAgents = [
-    //     {
-    //         id: 1,
-    //         name: 'Mike Johnson',
-    //         phone: '+1234567890',
-    //         vehicle: 'Motorcycle',
-    //         zone: 'Downtown',
-    //         status: 'active',
-    //         rating: 4.8,
-    //         deliveries: 342,
-    //         earnings: '$2,840'
-    //     },
-    //     {
-    //         id: 2,
-    //         name: 'Lisa Chen',
-    //         phone: '+1234567891',
-    //         vehicle: 'Bicycle',
-    //         zone: 'University Area',
-    //         status: 'active',
-    //         rating: 4.9,
-    //         deliveries: 289,
-    //         earnings: '$2,156'
-    //     },
-    //     {
-    //         id: 3,
-    //         name: 'David Rodriguez',
-    //         phone: '+1234567892',
-    //         vehicle: 'Car',
-    //         zone: 'Suburbs',
-    //         status: 'pending',
-    //         rating: 4.7,
-    //         deliveries: 156,
-    //         earnings: '$1,432'
-    //     }
-    // ];
+            console.log('Update response:', response.data);
+            alert('Agent updated successfully!');
+
+            // Refresh the agent list  
+            const agents = await getDeliveryAgents();
+            setDeliveryAgents(agents.data);
+
+
+            setIsEditing(false);
+            setEditDeliveryAgentData(null);
+        } catch (error) {
+            console.error('Error updating restaurant:', error);
+            alert('Failed to update restaurant: ' + (error.response?.data?.message || error.message));
+        } finally {
+            setLoading(false);
+        }
+    };
+    const handleAgentDelete = async (agentId) => {
+        if (!window.confirm('Are you sure you want to delete this restaurant?')) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.delete(`http://localhost:4000/api/admin/agent/${agentId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log(response.data);
+            alert('Agent removed successfully!');
+
+            // Refresh the restaurant list
+            const agents = await getDeliveryAgents();
+            setDeliveryAgents(agents.data);
+        } catch (error) {
+            console.error('Error deleting agent:', error);
+
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     const getVehicleIcon = (vehicle) => {
         switch (vehicle) {
@@ -386,24 +439,21 @@ const DeliveryAgentRegistration = () => {
                                         </div>
                                     </div>
 
-                                    {/* <div className="agent-stats">
-                                        <div className="stat">
-                                            <span className="stat-value">{agent.rating}</span>
-                                            <span className="stat-label">Rating</span>
-                                        </div>
-                                        <div className="stat">
-                                            <span className="stat-value">{agent.deliveries}</span>
-                                            <span className="stat-label">Deliveries</span>
-                                        </div>
-                                        <div className="stat">
-                                            <span className="stat-value">{agent.earnings}</span>
-                                            <span className="stat-label">Earnings</span>
-                                        </div>
-                                    </div> */}
-
                                     <div className="card-actions">
-                                        <button className="btn-outline">View Details</button>
-                                        <button className="btn-primary">Edit</button>
+                                        <button
+                                            className="btn-primary"
+                                            onClick={() => handleDeliveryAgentEdit(agent)}
+                                            disabled={loading}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleAgentDelete(agent._id)}
+                                            className="btn btn-danger"
+                                            disabled={loading}
+                                        >
+                                            Remove
+                                        </button>
                                     </div>
                                 </div>
                             );
@@ -411,6 +461,93 @@ const DeliveryAgentRegistration = () => {
                     </div>
                 </div>
             )}
+
+            {isEditing && (
+                <div className="modal-overlay">
+                    <div className="edit-modal">
+                        <div className="modal-header">
+                            <h2>Edit Delivery Agent</h2>
+                            <button className="close-btn" onClick={() => setIsEditing(false)} disabled={loading}>
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <div className="modal-content">
+                            <form onSubmit={handleEditSubmit}>
+                                <div className="form-group">
+                                    <label>Agent Name</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={editDeliveryAgentData?.name || ''}
+                                        onChange={handleEditChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Phone Number</label>
+                                    <input
+                                        type="number"
+                                        name="phone"
+                                        value={editDeliveryAgentData?.phone || ''}
+                                        onChange={handleEditChange}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Vehicle Type</label>
+                                    <select
+                                        name="vehicleType"
+                                        value={editDeliveryAgentData?.vehicleType || ''}
+                                        onChange={handleEditChange}
+                                        required
+                                    >
+                                        <option value="">Select Vehicle Type</option>
+                                        <option value="Motorcycle">Motorcycle</option>
+                                        <option value="Scooter">Scooter</option>
+                                        <option value="eBike">eBike</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Stop </label>
+                                    <input
+                                        type="text"
+                                        name="zone.stop"
+                                        value={editDeliveryAgentData?.zone?.stop || ''}
+                                        onChange={handleEditChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>City</label>
+                                    <input
+                                        type="text"
+                                        name="zone.city"
+                                        value={editDeliveryAgentData?.zone?.city || ''}
+                                        onChange={handleEditChange}
+                                        required
+                                    />
+                                </div>
+
+
+
+
+                                <div className="form-actions">
+                                    <button type="button" className="btn-secondary" onClick={() => setIsEditing(false)} disabled={loading}>
+                                        Cancel
+                                    </button>
+                                    <button type="submit" className="btn-primary" disabled={loading}>
+                                        {loading ? 'Saving...' : 'Save Changes'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

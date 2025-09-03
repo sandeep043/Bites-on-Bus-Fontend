@@ -63,7 +63,7 @@ const DeliveryDashBoard = () => {
             console.error('Error fetching ready to pickup orders:', error);
             throw error;
         }
-    };
+    }; 
     const updateAgentAvailabelity = async (agentId, availabelity
     ) => {
         try {
