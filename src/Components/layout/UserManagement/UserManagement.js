@@ -77,7 +77,7 @@ const UserManagement = () => {
                     />
                 </div>
 
-                <div className="filter-box">
+                {/* <div className="filter-box">
                     <Filter size={20} />
                     <select
                         value={filterRole}
@@ -88,7 +88,7 @@ const UserManagement = () => {
                         <option value="restaurant_owner">Restaurant Owners</option>
                         <option value="delivery_agent">Delivery Agents</option>
                     </select>
-                </div>
+                </div> */}
             </div>
 
             <div className="user-table-container">

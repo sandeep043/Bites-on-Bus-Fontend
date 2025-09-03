@@ -12,8 +12,8 @@ const getStatusVariant = (status) => {
         case 'On the way':
         case 'Out for delivery':
             return 'warning';
-        case 'Placed': 
-             return 'primary';
+        case 'Placed':
+            return 'primary';
         case 'Cancelled':
             return 'danger';
         default:

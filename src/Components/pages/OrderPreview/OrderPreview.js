@@ -145,11 +145,11 @@ export default function OrderPreview() {
                         {/* Left column - Order details */}
                         <div className="col-lg-8 d-flex flex-column gap-4">
                             {/* OTP Verification */}
-                            <OtpVerification
+                            {/* <OtpVerification
                                 isVerified={order.isOtpVerified}
                                 phoneNumber={order.customerDetails.phone}
                                 onVerify={handleOtpVerify}
-                            />
+                            /> */}
                             <CustomerDetailsCard customerDetails={order.customerDetails} />
                             <DeliveryInfo
                                 deliveryLocation={order.DeliveryLocation}

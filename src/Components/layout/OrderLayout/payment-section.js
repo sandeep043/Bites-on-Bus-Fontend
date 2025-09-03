@@ -6,12 +6,14 @@ import axios from 'axios'; // Make sure axios is imported
 export function PaymentSection({ order }) {
 
     const [form, setForm] = useState('')
-    // const userDetails = JSON.parse(localStorage.getItem("userDetails"));
+    const UserDetails = JSON.parse(localStorage.getItem("travelerData"));
+
     const userDetails = {
-        firstname: "sandeep",
-        email: `sandeep${Math.floor(Math.random() * 56)}@gmail.com`,
-        mobile: "9876543210"
+        firstname: UserDetails.user.name,
+        email: UserDetails.user.email,
+        mobile: UserDetails.user.phone
     };
+    // console.log('user details', JSON.stringify(userDetails))
     console.log('order details', JSON.stringify(order))
 
     useEffect(() => {
@@ -22,7 +24,7 @@ export function PaymentSection({ order }) {
         }
     }, [form]);
 
-    const BuyNowHandler = async ({ amount, product, firstname, email, mobile, PNRresponse, customerDetails, orderItems, restaurant_id, orderTimeandDate, DeliveryLocation, user_id = "689ad3f27ac9109206dfc07f" }) => {
+    const BuyNowHandler = async ({ amount, product, firstname, email, mobile, PNRresponse, customerDetails, orderItems, restaurant_id, orderTimeandDate, DeliveryLocation, user_id = UserDetails.user._id }) => {
         try {
             const data = await (await axios.post("http://localhost:4000/api/payment/get-payment", {
                 amount, product, firstname, email, mobile, PNRresponse, customerDetails, orderItems, restaurant_id, orderTimeandDate, DeliveryLocation, user_id

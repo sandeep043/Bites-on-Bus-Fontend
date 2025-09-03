@@ -238,7 +238,7 @@
 .order-spinner {
     width: 1.5rem;
     height: 1.5rem;
-    border: 3px solid rgba(255, 255, 255, 0.3);
+    border: 3px solid rgba(62, 32, 146, 0.3);
     border-top-color: white;
     border-radius: 50%;
     animation: spin 1s linear infinite;

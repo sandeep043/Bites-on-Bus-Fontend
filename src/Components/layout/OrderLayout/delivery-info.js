@@ -21,7 +21,7 @@ export function DeliveryInfo({ deliveryLocation, estimatedTime }) {
                         </div>
                     </div>
 
-                    {estimatedTime && (
+                    {/* {estimatedTime && (
                         <div className="d-flex align-items-center gap-3 p-3 bg-info bg-opacity-10 rounded border border-info border-opacity-25">
                             <Clock className="text-info" style={{ width: '20px', height: '20px' }} />
                             <div>
@@ -29,7 +29,7 @@ export function DeliveryInfo({ deliveryLocation, estimatedTime }) {
                                 <p className="small text-info text-opacity-80">{estimatedTime}</p>
                             </div>
                         </div>
-                    )}
+                    )} */}
 
                     <div className="small text-muted p-3 bg-light rounded">
                         <p className="mb-1">📱 <strong>Delivery Instructions:</strong></p>

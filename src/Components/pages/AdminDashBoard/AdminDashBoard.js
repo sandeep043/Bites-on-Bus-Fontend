@@ -6,6 +6,7 @@ import DeliveryAgentRegistration from '../../layout/DeliveryAgentRegistration/De
 import './AdminDashBoard.css';
 import UserManagement from '../../layout/UserManagement/UserManagement';
 import { useLocation } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 const AdminDashboard = () => {
     const location = useLocation();
@@ -15,14 +16,7 @@ const AdminDashboard = () => {
     console.log("role", role);
     console.log("response", response);
 
-    //  const restaurantLocalStorage = localStorage.getItem('restaurantData')
-    //     ? JSON.parse(localStorage.getItem('restaurantData'))
-    //     : null;
 
-    // console.log('restaurantLocalStorage', restaurantLocalStorage);
-
-    // const token = restaurantLocalStorage?.token; // Get the token from localStorage 
-    // console.log('token', token); 
 
 
     const adminLocalStorage = localStorage.getItem('adminData')
@@ -50,14 +44,16 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div className="dashboard">
-            <Sidebar activeView={activeView} setActiveView={setActiveView} />
-            <div className="main-content">
-                <div className="content-wrapper">
-                    {renderActiveView()}
+        <> <ToastContainer />
+            <div className="dashboard">
+                <Sidebar activeView={activeView} setActiveView={setActiveView} />
+                <div className="main-content">
+                    <div className="content-wrapper">
+                        {renderActiveView()}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

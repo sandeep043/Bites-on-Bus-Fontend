@@ -229,8 +229,9 @@ const MyOrders = () => {
                                                     <Package size={20} color="#0d6efd" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="order-restaurant-name">{order.restaurantId.name}</h3>
-                                                    <p className="order-restaurant-cuisine">{order.restaurantId.cuisineType}</p>
+                                                    {/* <h3 className="order-restaurant-name">{order.restaurantId.name?|| ''}</h3> */}
+                                                    <h3 className="order-restaurant-name">{order.restaurantId?.name || 'N/A'}</h3>
+                                                    <p className="order-restaurant-cuisine">{order.restaurantId?.cuisineType || 'N/A'}</p>
                                                 </div>
                                             </div>
                                             <Badge bg={getStatusBadgeVariant(order.status)}>

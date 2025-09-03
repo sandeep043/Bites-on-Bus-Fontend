@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Store, User, MapPin, Phone, Mail, Clock, DollarSign, Star, X } from 'lucide-react';
 import './RestaurantRegistration.css';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 const RestaurantRegistration = () => {
     const [activeTab, setActiveTab] = useState('register');
@@ -75,7 +76,7 @@ const RestaurantRegistration = () => {
                 }
             );
             console.log(response.data);
-            alert('Restaurant and owner registered successfully!');
+            toast.success('Restaurant and owner registered successfully!');
             setOwnerForm({
                 name: '',
                 email: '',
@@ -96,8 +97,9 @@ const RestaurantRegistration = () => {
             });
         }
         catch (error) {
+            toast.error(`Failed to register restaurant and owner.${error.response?.data?.message || ''}`);
             console.error('Error registering owner and restaurant:', error);
-            alert('Error registering restaurant: ' + (error.response?.data?.message || error.message));
+
         } finally {
             setLoading(false);
         }
@@ -167,7 +169,7 @@ const RestaurantRegistration = () => {
             );
 
             console.log('Update response:', response.data);
-            alert('Restaurant updated successfully!');
+            toast.success('Restaurant updated successfully!');
 
             // Refresh the restaurant list
             const restaurants = await getAllrestaurantsRegistered();
@@ -177,7 +179,8 @@ const RestaurantRegistration = () => {
             setEditRestaurantData(null);
         } catch (error) {
             console.error('Error updating restaurant:', error);
-            alert('Failed to update restaurant: ' + (error.response?.data?.message || error.message));
+            toast.error(`Failed to update restaurant. ${error.response?.data?.message || ''}`);
+
         } finally {
             setLoading(false);
         }
@@ -197,14 +200,14 @@ const RestaurantRegistration = () => {
                 }
             });
             console.log(response.data);
-            alert('Restaurant removed successfully!');
+            toast.success('Restaurant removed successfully!');
 
             // Refresh the restaurant list
             const restaurants = await getAllrestaurantsRegistered();
             setRegisteredRestaurants(restaurants.restaurants || []);
         } catch (error) {
             console.error('Error deleting restaurant:', error);
-            alert('Failed to remove restaurant: ' + (error.response?.data?.message || error.message));
+            toast.error(`Failed to delete restaurant. ${error.response?.data?.message || ''}`);
         } finally {
             setLoading(false);
         }
@@ -221,7 +224,8 @@ const RestaurantRegistration = () => {
             return response.data;
         } catch (error) {
             console.error('Error fetching registered restaurants:', error);
-            alert('Error fetching restaurants: ' + (error.response?.data?.message || error.message));
+            toast.error(`Error fetching restaurants. ${error.response?.data?.message || ''}`);
+            // alert('Error fetching restaurants: ' + (error.response?.data?.message || error.message));
             return { restaurants: [] };
         }
     };

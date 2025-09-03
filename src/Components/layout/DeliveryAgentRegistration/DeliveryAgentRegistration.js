@@ -3,6 +3,7 @@ import { Truck, User, Phone, Mail, MapPin, Car, Bike, AlertCircle, X } from 'luc
 import axios from 'axios';
 import { useEffect } from 'react';
 import './DeliveryAgentRegistration.css';
+import { ToastContainer, toast } from 'react-toastify';
 
 const DeliveryAgentRegistration = () => {
     const [activeTab, setActiveTab] = useState('register');
@@ -20,6 +21,7 @@ const DeliveryAgentRegistration = () => {
         licensePlate: '',
         stop: '',
         city: '',
+        bankAccount: '',
 
     });
     const token = JSON.parse(localStorage.getItem('adminData'))?.token;
@@ -58,6 +60,7 @@ const DeliveryAgentRegistration = () => {
 
         } catch (error) {
             console.error(error.response.data);
+            toast.error(`Error registering agent: ${error.response?.data?.message} `, error.response?.data?.message);
 
 
 
@@ -107,7 +110,23 @@ const DeliveryAgentRegistration = () => {
         e.preventDefault();
         const response = await RegisterAgent(agentForm);
         console.log(response);
-        alert('Delivery agent registered successfully!');
+        if (response) {
+            toast.success("Agent registered successfully!");
+        }
+        setAgentForm({
+            name: '',
+            email: '',
+            phone: '',
+            password: '',
+            idNumber: '',
+            vehicleType: '',
+            licensePlate: '',
+            stop: '',
+            city: '',
+            bankAccount: '',
+
+        });
+
 
     };
 
@@ -146,7 +165,7 @@ const DeliveryAgentRegistration = () => {
             );
 
             console.log('Update response:', response.data);
-            alert('Agent updated successfully!');
+            toast.success("Agent details updated successfully!");
 
             // Refresh the agent list  
             const agents = await getDeliveryAgents();
@@ -156,8 +175,9 @@ const DeliveryAgentRegistration = () => {
             setIsEditing(false);
             setEditDeliveryAgentData(null);
         } catch (error) {
-            console.error('Error updating restaurant:', error);
-            alert('Failed to update restaurant: ' + (error.response?.data?.message || error.message));
+            toast.error(`Error updating agent: ${error.response?.data?.message} `, error.response?.data?.message);
+            console.error('Error updating agent', error);
+
         } finally {
             setLoading(false);
         }
@@ -176,7 +196,8 @@ const DeliveryAgentRegistration = () => {
                 }
             });
             console.log(response.data);
-            alert('Agent removed successfully!');
+
+            toast.success("Agent deleted successfully!");
 
             // Refresh the restaurant list
             const agents = await getDeliveryAgents();

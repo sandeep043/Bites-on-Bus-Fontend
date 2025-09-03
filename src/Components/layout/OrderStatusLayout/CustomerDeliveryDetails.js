@@ -8,7 +8,7 @@ const CustomerDeliveryDetails = ({
     isOtpVerified,
     deliveryStatus,
     agentDetails = {} // Default to empty object if agentDetails not provided
-}) => { 
+}) => {
 
     return (
         <Card className="w-100 mb-4 shadow-sm">
@@ -58,7 +58,7 @@ const CustomerDeliveryDetails = ({
                     </div>
                 </div> */}
 
-               <div className="pt-2 border-top">
+                <div className="pt-2 border-top">
                     {(!agentDetails || Object.keys(agentDetails).length === 0) ? (
                         <p className="small text-muted mb-0">
                             <strong>Delivery Partner:</strong> Awaiting assignment
@@ -73,7 +73,7 @@ const CustomerDeliveryDetails = ({
                                     <strong>Phone:</strong> {agentDetails.phone}
                                 </p>
                             )}
-                             <p className="small text-muted mb-0">
+                            <p className="small text-muted mb-0">
                                 <strong>vehicleType :</strong> {agentDetails.vehicleType || 'N/A'}
                             </p>
                         </div>

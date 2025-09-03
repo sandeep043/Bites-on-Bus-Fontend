@@ -88,7 +88,7 @@ describe('UserManagement Component', () => {
         expect(screen.getByText('User Management')).toBeInTheDocument();
         expect(screen.getByText('Manage all users across your platform')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Search users by name or email...')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('All Roles')).toBeInTheDocument();
+
     });
 
     // test('fetches users on component mount', async () => {
@@ -149,31 +149,7 @@ describe('UserManagement Component', () => {
         expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
     });
 
-    test('filters users by role', async () => {
-        await act(async () => {
-            render(<UserManagement />);
-        });
 
-        const roleFilter = screen.getByDisplayValue('All Roles');
-
-        // Filter by restaurant_owner
-        await act(async () => {
-            fireEvent.change(roleFilter, { target: { value: 'restaurant_owner' } });
-        });
-
-        expect(screen.getByText('Jane Smith')).toBeInTheDocument();
-        expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
-        expect(screen.queryByText('Bob Wilson')).not.toBeInTheDocument();
-
-        // Filter by delivery_agent
-        await act(async () => {
-            fireEvent.change(roleFilter, { target: { value: 'delivery_agent' } });
-        });
-
-        expect(screen.getByText('Bob Wilson')).toBeInTheDocument();
-        expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
-        expect(screen.queryByText('Jane Smith')).not.toBeInTheDocument();
-    });
 
     test('displays user information correctly', async () => {
         await act(async () => {

@@ -4,7 +4,7 @@ import { Button, Form, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../layout/Header/Header';
 import Footer from '../../layout/Footer/Footer';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import './OrderPage.css';
 
@@ -19,8 +19,10 @@ const OrderPage = () => {
             const response = await axios.get(`http://localhost:4000/api/pnr/${pnr}`);
             return response.data;
         } catch (error) {
+            toast.error(`Error fetching PNR data: ${error.response?.data?.message} `, error.response?.data?.message);
+
             console.error("Error fetching PNR data:", error);
-            toast.error("Failed to fetch PNR data. Please try again later.");
+
             setIsLoading(false);
         }
     }
@@ -44,6 +46,7 @@ const OrderPage = () => {
     return (
         <>
             <Header />
+            <ToastContainer />
             <div className="order-page-container">
                 <div className="order-page-content">
                     {/* Logo and Header */}

@@ -103,7 +103,7 @@ const OrderFlow = () => {
 
 
     const addToCart = (item) => {
-        const existingItem = cart.find(cartItem => cartItem._id === item);
+        const existingItem = cart.find(cartItem => cartItem._id === item._id);
         if (existingItem) {
             setCart(cart.map(cartItem =>
                 cartItem._id === item._id

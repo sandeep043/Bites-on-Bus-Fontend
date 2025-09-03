@@ -180,9 +180,9 @@ const OrderTrackingPage = () => {
 
                     {/* Header */}
                     <div className="order-tracking-header">
-                        <div className="header-icon-container">
+                        {/* <div className="header-icon-container">
                             <Truck className="header-icon" />
-                        </div>
+                        </div> */}
                         <h1 className="order-tracking-title">Track Your Order</h1>
                         <p className="order-tracking-subtitle">Real-time updates on your food delivery</p>
                     </div>

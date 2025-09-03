@@ -29,15 +29,6 @@ export function CustomerDetailsCard({ customerDetails }) {
                         </div>
                     </div>
 
-                    <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
-                            <Ticket className="text-success" style={{ width: '20px', height: '20px' }} />
-                        </div>
-                        <div>
-                            <p className="text-muted small mb-0">PNR Number</p>
-                            {/* <p className="fw-medium font-monospace mb-0">{customerDetails.PNR}</p> */}
-                        </div>
-                    </div>
 
                     <div className="d-flex align-items-center gap-3">
                         <div className="rounded-circle bg-warning bg-opacity-10 d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
