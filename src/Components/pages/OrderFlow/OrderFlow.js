@@ -336,10 +336,10 @@ const OrderFlow = () => {
                                                     <p className="price">₹{item.price}</p>
                                                 </div>
                                                 <Button
+                                                    className="add-to-cart-btn"
                                                     onClick={() => addToCart(item)}
                                                     variant="primary"
                                                 >
-                                                    <Plus className="icon" />
                                                     <span>Add</span>
 
                                                 </Button>
